@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'nsq-cluster'
+require 'optparse'
+
+options = {
+  nsqd_count: 1,
+  nsqlookupd_count: 1,
+  nsqadmin: true,
+  silent: false
+}
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: nsq-cluster [options]"
+
+  opts.on("-q", "--nsqd", "Number of nsqd instances to run") do |c|
+    options[:nsqd_count] = c
+  end
+
+  opts.on("-l", "--nsqlookupd", "Number of nsqd instances to run") do |l|
+    options[:nsqlookupd_count] = l
+  end
+end.parse!
+
+print 'Starting cluster ... '
+cluster = NsqCluster.new(options)
+puts 'started'
+
+Signal.trap('INT') do
+  print 'Shutting down ... '
+  cluster.destroy
+  puts 'done'
+  exit
+end
+
+loop { sleep(1) }

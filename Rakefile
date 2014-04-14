@@ -15,11 +15,11 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://guides.rubygems.org/specification-reference/ for more options
   gem.name = "nsq-cluster"
-  gem.homepage = "http://github.com/bschwartz/nsq-cluster"
+  gem.homepage = "http://github.com/wistia/nsq-cluster"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
-  gem.email = "brendanschwartz@gmail.com"
+  gem.summary = %Q{Easily setup and manage a local NSQ cluster}
+  gem.description = %Q{Setup nsqd, nsqlookupd, and nsqadmin in a jiffy. Great for testing!}
+  gem.email = "brendan@wistia.com"
   gem.authors = ["Brendan Schwartz"]
   # dependencies defined in Gemfile
 end
@@ -28,7 +28,7 @@ Jeweler::RubygemsDotOrgTasks.new
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/test_*.rb'
+  test.pattern = 'test/**/*_spec.rb'
   test.verbose = true
 end
 
