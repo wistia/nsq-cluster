@@ -14,17 +14,30 @@ Gem::Specification.new do |s|
   s.date = "2014-04-14"
   s.description = "Setup nsqd, nsqlookupd, and nsqadmin in a jiffy. Great for testing!"
   s.email = "brendan@wistia.com"
+  s.executables = ["nsq-cluster"]
   s.extra_rdoc_files = [
     "LICENSE",
     "README.md"
   ]
   s.files = [
     ".document",
+    ".ruby-gemset",
+    ".ruby-version",
     "Gemfile",
+    "Gemfile.lock",
+    "LICENSE",
+    "README.md",
     "Rakefile",
     "VERSION",
+    "bin/nsq-cluster",
     "lib/nsq-cluster.rb",
-    "test/helper.rb"
+    "lib/nsq-cluster/nsqadmin.rb",
+    "lib/nsq-cluster/nsqd.rb",
+    "lib/nsq-cluster/nsqlookupd.rb",
+    "lib/nsq-cluster/process_wrapper.rb",
+    "nsq-cluster.gemspec",
+    "test/helper.rb",
+    "test/nsq_cluster_spec.rb"
   ]
   s.homepage = "http://github.com/wistia/nsq-cluster"
   s.licenses = ["MIT"]
