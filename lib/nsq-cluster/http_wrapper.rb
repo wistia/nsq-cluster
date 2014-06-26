@@ -4,9 +4,14 @@ require 'uri'
 module HTTPWrapper
 
 
-  def post(path, params = {})
+  def post(path, params = {}, body = nil)
     uri = uri("#{path}?#{URI.encode_www_form(params)}")
-    Net::HTTP.post_form(uri, {})
+    request = Net::HTTP::Post.new(uri)
+    request.body = body
+
+    Net::HTTP.start(uri.hostname, uri.port) do |http|
+      http.request(request)
+    end
   end
 
 

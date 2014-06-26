@@ -62,6 +62,18 @@ class Nsqd < ProcessWrapper
   end
 
 
+  # publish a single message to a topic
+  def pub(topic, message)
+    post 'pub', { topic: topic }, message
+  end
+
+
+  # publish multiple messages to a topic
+  def mpub(topic, *messages)
+    post 'mpub', { topic: topic }, messages.join("\n")
+  end
+
+
   # create a topic or a channel in an existing topic
   def create(params = {})
     nsqd_post 'create', topic: params[:topic], channel: params[:channel]

@@ -35,6 +35,30 @@ describe Nsqd do
       end
     end
 
+    describe '#pub' do
+      it 'should return status 200' do
+        resp = @nsqd.pub('test', 'a message')
+        resp.code.must_equal '200'
+      end
+    end
+
+    describe '#mpub' do
+      it 'should return status 200' do
+        resp = @nsqd.mpub('test', 'a message', 'another message', 'last message')
+        resp.code.must_equal '200'
+      end
+
+      it 'should create multiple messages' do
+        resp = @nsqd.mpub('test', 'a message', 'another message', 'last message')
+
+        topic = JSON.parse(@nsqd.stats.body)['data']['topics'].select do |t|
+          t['topic_name'] == 'test'
+        end.first
+
+        topic['message_count'].must_equal 3
+      end
+    end
+
     describe '#create' do
       it 'should return status 200' do
         resp1 = @nsqd.create(topic: 'test')
