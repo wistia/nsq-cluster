@@ -22,6 +22,12 @@ Available methods that map to [`nsqd`'s](http://nsq.io/components/nsqd.html) HTT
 # nsqd
 nsqd = cluster.nsqd.first
 
+# Publish a message to a topic
+nsqd.pub('stats', 'a message')
+
+# Publish multiple messages to a topic
+nsqd.mpub('stats', 'a message', 'a second message', 'last message')
+
 # Create a topic
 nsqd.create(topic: 'stats')
 
