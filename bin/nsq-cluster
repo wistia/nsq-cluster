@@ -25,6 +25,7 @@ OptionParser.new do |opts|
 end.parse!
 
 cluster = NsqCluster.new(options)
+cluster.block_until_running
 
 Signal.trap('INT') do
   print 'Shutting down ... '
