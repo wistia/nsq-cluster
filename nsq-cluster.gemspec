@@ -10,37 +10,25 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
-  s.authors = ["Brendan Schwartz"]
+  s.authors = ["Wistia"]
   s.date = "2014-07-17"
   s.description = "Setup nsqd, nsqlookupd, and nsqadmin in a jiffy. Great for testing!"
-  s.email = "brendan@wistia.com"
+  s.email = "dev@wistia.com"
   s.executables = ["nsq-cluster"]
   s.extra_rdoc_files = [
     "LICENSE",
     "README.md"
   ]
   s.files = [
-    ".document",
-    ".ruby-gemset",
-    ".ruby-version",
-    "Gemfile",
-    "Gemfile.lock",
     "LICENSE",
     "README.md",
-    "Rakefile",
-    "VERSION",
     "bin/nsq-cluster",
     "lib/nsq-cluster.rb",
     "lib/nsq-cluster/http_wrapper.rb",
     "lib/nsq-cluster/nsqadmin.rb",
     "lib/nsq-cluster/nsqd.rb",
     "lib/nsq-cluster/nsqlookupd.rb",
-    "lib/nsq-cluster/process_wrapper.rb",
-    "nsq-cluster.gemspec",
-    "test/helper.rb",
-    "test/nsq_cluster_spec.rb",
-    "test/nsqd_spec.rb",
-    "test/nsqlookupd_spec.rb"
+    "lib/nsq-cluster/process_wrapper.rb"
   ]
   s.homepage = "http://github.com/wistia/nsq-cluster"
   s.licenses = ["MIT"]

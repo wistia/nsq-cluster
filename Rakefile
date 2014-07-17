@@ -19,8 +19,9 @@ Jeweler::Tasks.new do |gem|
   gem.license = "MIT"
   gem.summary = %Q{Easily setup and manage a local NSQ cluster}
   gem.description = %Q{Setup nsqd, nsqlookupd, and nsqadmin in a jiffy. Great for testing!}
-  gem.email = "brendan@wistia.com"
-  gem.authors = ["Brendan Schwartz"]
+  gem.email = "dev@wistia.com"
+  gem.authors = ["Wistia"]
+  gem.files = Dir.glob('lib/**/*.rb') + Dir.glob('bin/*') + ['LICENSE', 'README.md']
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
