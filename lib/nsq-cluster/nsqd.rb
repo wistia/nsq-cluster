@@ -10,11 +10,12 @@ class Nsqd < ProcessWrapper
 
 
   def initialize(opts = {})
-    @host = '127.0.0.1'
+    @host = opts[:host] || '127.0.0.1'
     @tcp_port = opts[:tcp_port] || 4150
     @http_port = opts[:http_port] || 4151
     @lookupd = opts[:nsqlookupd] || []
     @msg_timeout = opts[:msg_timeout] || '60s'
+    @broadcast_address = opts[:broadcast_address] || @host
 
     clear_data_directory
     create_data_directory
@@ -40,7 +41,8 @@ class Nsqd < ProcessWrapper
       %Q(--http-address=#{@host}:#{@http_port}),
       %Q(--data-path=#{data_path}),
       %Q(--worker-id=#{worker_id}),
-      %Q(--msg-timeout=#{@msg_timeout})
+      %Q(--msg-timeout=#{@msg_timeout}),
+      %Q(--broadcast-address=#{@broadcast_address})
     ]
 
     lookupd_args = @lookupd.map do |ld|

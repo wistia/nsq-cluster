@@ -22,6 +22,7 @@ class NsqCluster
   def initialize(opts = {})
     opts = {
       nsqlookupd_count: 0,
+      nsqdlookupd_options: {},
       nsqd_count: 0,
       nsqadmin: false,
       nsqd_options: {},
@@ -30,7 +31,7 @@ class NsqCluster
 
     @silent = opts[:silent]
 
-    @nsqlookupd = create_nsqlookupds(opts[:nsqlookupd_count])
+    @nsqlookupd = create_nsqlookupds(opts[:nsqlookupd_count], opts[:nsqdlookupd_options])
     @nsqd = create_nsqds(opts[:nsqd_count], opts[:nsqd_options])
     @nsqadmin = create_nsqadmin if opts[:nsqadmin]
 
@@ -39,13 +40,13 @@ class NsqCluster
   end
 
 
-  def create_nsqlookupds(count)
+  def create_nsqlookupds(count, options)
     (0...count).map do |idx|
-      Nsqlookupd.new(
+      Nsqlookupd.new(options.merge({
         tcp_port: 4160 + idx * 2,
         http_port: 4161 + idx * 2,
         silent: @silent
-      )
+      }))
     end
   end
 
