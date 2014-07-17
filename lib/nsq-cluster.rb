@@ -29,7 +29,7 @@ class NsqCluster
       nsqd_count: 0,
       nsqadmin: false,
       nsqd_options: {},
-      silent: true,
+      silent: true
     }.merge(opts)
 
     @silent = opts[:silent]
