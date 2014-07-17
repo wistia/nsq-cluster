@@ -24,9 +24,8 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-print 'Starting cluster ... '
 cluster = NsqCluster.new(options)
-puts 'started'
+cluster.block_until_running
 
 Signal.trap('INT') do
   print 'Shutting down ... '
