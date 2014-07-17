@@ -85,7 +85,7 @@ class NsqCluster
   end
 
 
-  def block_until_running(timeout = 30)
+  def block_until_running(timeout = 3)
     puts "Waiting for cluster to launch..." unless @silent
     begin
       Timeout::timeout(timeout) do
