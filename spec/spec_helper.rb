@@ -10,11 +10,14 @@ end
 
 require 'nsq-cluster'
 
-require 'rspec'
 require 'fakeweb'
-FakeWeb.allow_net_connect = false
-FakeWeb.allow_net_connect = %r[^https?://#{Regexp.escape('127.0.0.1')}.*]
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
+RSpec.configure do |config|
+  config.color = true
+  config.order = :random
+  config.tty = true
+end
 
+RSpec.configuration.before :each do
+  FakeWeb.allow_net_connect = %r[^https?://#{Regexp.escape('127.0.0.1')}.*]
+end
