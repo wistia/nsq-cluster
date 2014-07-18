@@ -45,7 +45,7 @@ describe Nsqlookupd do
     end
 
     describe '#lookup' do
-      context 'an existing topic' do
+      describe 'an existing topic' do
         before do
           @nsqd.create(topic: 'test')
         end
@@ -55,7 +55,7 @@ describe Nsqlookupd do
         end
       end
 
-      context 'a non-existant topic' do
+      describe 'a non-existant topic' do
         it 'should return status 500' do
           expect(@nsqlookupd.lookup('wtf').code).to eql('500')
         end

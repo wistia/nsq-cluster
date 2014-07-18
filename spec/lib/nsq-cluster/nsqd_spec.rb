@@ -81,7 +81,7 @@ describe Nsqd do
         @nsqd.create(topic: 'test')
       end
 
-      context 'an existing channel' do
+      describe 'an existing channel' do
         it 'should return status 200' do
           @nsqd.create(topic: 'test', channel: 'default')
           resp = @nsqd.delete(topic: 'test', channel: 'default')
@@ -89,7 +89,7 @@ describe Nsqd do
         end
       end
 
-      context 'a non-existant channel' do
+      describe 'a non-existant channel' do
         it 'should return status 500' do
           resp = @nsqd.delete(topic: 'test', channel: 'default')
           expect(resp.code).to eql('500')
@@ -102,7 +102,7 @@ describe Nsqd do
         @nsqd.create(topic: 'test')
       end
 
-      context 'an existing channel' do
+      describe 'an existing channel' do
         it 'should return status 200' do
           @nsqd.create(topic: 'test', channel: 'default')
           resp = @nsqd.pause(topic: 'test', channel: 'default')
@@ -110,7 +110,7 @@ describe Nsqd do
         end
       end
 
-      context 'a non-existant channel' do
+      describe 'a non-existant channel' do
         it 'should return status 500' do
           resp = @nsqd.pause(topic: 'test', channel: 'default')
           expect(resp.code).to eql('500')
@@ -123,7 +123,7 @@ describe Nsqd do
         @nsqd.create(topic: 'test')
       end
 
-      context 'an existing channel' do
+      describe 'an existing channel' do
         it 'should return status 200' do
           @nsqd.create(topic: 'test', channel: 'default')
           resp = @nsqd.unpause(topic: 'test', channel: 'default')
@@ -131,7 +131,7 @@ describe Nsqd do
         end
       end
 
-      context 'a non-existant channel' do
+      describe 'a non-existant channel' do
         it 'should return status 500' do
           resp = @nsqd.unpause(topic: 'test', channel: 'default')
           expect(resp.code).to eql('500')
@@ -144,7 +144,7 @@ describe Nsqd do
         @nsqd.create(topic: 'test')
       end
 
-      context 'an existing channel' do
+      describe 'an existing channel' do
         it 'should return status 200' do
           @nsqd.create(topic: 'test', channel: 'default')
           resp = @nsqd.empty(topic: 'test', channel: 'default')
@@ -152,7 +152,7 @@ describe Nsqd do
         end
       end
 
-      context 'a non-existant channel' do
+      describe 'a non-existant channel' do
         it 'should return status 500' do
           resp = @nsqd.empty(topic: 'test', channel: 'default')
           expect(resp.code).to eql('500')
