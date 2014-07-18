@@ -17,9 +17,9 @@ describe NsqCluster do
     it 'ensures nsql cluster is running after execution' do
       cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
       cluster.block_until_running
-      cluster.send(:service_http_ports).each do |port|
+      cluster.send(:running_http_services).each do |port, host|
         # This will raise an exception if the service is not yet running.
-        sock = TCPSocket.new('127.0.0.1', port)
+        sock = TCPSocket.new(host, port)
         sock.close
       end
       cluster.destroy
@@ -32,9 +32,9 @@ describe NsqCluster do
         nsqadmin: true
       )
       cluster.block_until_running
-      cluster.send(:service_http_ports).each do |port|
+      cluster.send(:running_http_services).each do |port, host|
         # This will raise an exception if the service is not yet running.
-        sock = TCPSocket.new('127.0.0.1', port)
+        sock = TCPSocket.new(host, port)
         sock.close
       end
       cluster.destroy
@@ -51,7 +51,7 @@ describe NsqCluster do
         silent: true
       })
       # 2 HTTP nsqd, 2 HTTP nsqlookup, 1 HTTP nsqadmin
-      (cluster.send :service_http_ports).count.must_equal 5
+      (cluster.send :running_http_services).keys.count.must_equal 5
       cluster.destroy
     end
     it 'works when nsqadmin not enabled' do
@@ -62,7 +62,7 @@ describe NsqCluster do
         silent: true
       })
       # 2 HTTP nsqd, 2 HTTP nsqlookup
-      (cluster.send :service_http_ports).count.must_equal 4
+      (cluster.send :running_http_services).keys.count.must_equal 4
       cluster.destroy
     end
   end

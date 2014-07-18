@@ -89,8 +89,8 @@ class NsqCluster
     puts "Waiting for cluster to launch..." unless @silent
     begin
       Timeout::timeout(timeout) do
-        service_http_ports.each do |port|
-          wait_for_http_port(port)
+        running_http_services.each do |port, host|
+          wait_for_http_port(port, host)
         end
         puts "Cluster launched." unless @silent
       end
@@ -101,16 +101,19 @@ class NsqCluster
 
 
   private
-  def service_http_ports
-    (nsqlookupd + nsqd + [nsqadmin]).compact.map(&:http_port)
+  def running_http_services
+    (nsqlookupd + nsqd + [nsqadmin]).compact.inject({}) do |result, item|
+      result[item.http_port] = item.host
+      result
+    end
   end
 
 
-  def wait_for_http_port(port)
+  def wait_for_http_port(port, host)
     port_open = false
     until port_open do
       begin
-        response = Net::HTTP.get_response(URI("http://localhost:#{port}/ping"))
+        response = Net::HTTP.get_response(URI("http://#{host}:#{port}/ping"))
         if response.is_a?(Net::HTTPSuccess)
           port_open = true
           puts "HTTP port #{port} responded to /ping." unless @silent
