@@ -50,16 +50,17 @@ describe NsqCluster do
 
   describe '#all_services' do
     it 'contains array with every instance of every service' do
-      # cluster = NsqCluster.new(
-      #   nsqd_count: 3,
-      #   nsqlookupd_count: 2,
-      #   nsqadmin: true
-      # )
-      # all_services = cluster.send :all_services
-      # expect(all_services.count).to equal(6)
-      # expect(all_services.map{|m| m.is_a?(Nsqd)}.count).to equal(3)
-      # expect(all_services.map{|m| m.is_a?(Nsqlookupd)}.count).to equal(2)
-      # expect(all_services.map{|m| m.is_a?(Nsqadmin)}.count).to equal(1)
+      cluster = NsqCluster.new(
+        nsqd_count: 3,
+        nsqlookupd_count: 2,
+        nsqadmin: true
+      )
+      all_services = cluster.send :all_services
+      expect(all_services.count).to equal(6)
+      expect(all_services.select{|m| m.is_a?(Nsqd)}.count).to equal(3)
+      expect(all_services.select{|m| m.is_a?(Nsqlookupd)}.count).to equal(2)
+      expect(all_services.select{|m| m.is_a?(Nsqadmin)}.count).to equal(1)
+      cluster.destroy
     end
   end
 end
