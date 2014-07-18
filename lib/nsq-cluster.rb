@@ -102,13 +102,7 @@ class NsqCluster
 
   private
   def service_http_ports
-    ports = []
-    # nsqadmin responds to /ping as well, even though it is not documented.
-    ports << nsqadmin.http_port if nsqadmin
-    nsqlookupd.each {|n| ports << n.http_port}
-    nsqd.each {|n| ports << n.http_port}
-
-    ports
+    (nsqlookupd + nsqd + [nsqadmin]).compact.map(&:http_port)
   end
 
 
