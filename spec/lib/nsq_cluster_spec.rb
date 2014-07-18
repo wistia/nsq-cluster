@@ -4,7 +4,7 @@ require 'socket'
 
 describe NsqCluster do
   describe '#initialize' do
-    it 'should start up a cluster for realsies' do
+    it 'should start up a cluster' do
       cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
       expect(cluster.nsqd.length).to equal(1)
       expect(cluster.nsqlookupd.length).to equal(1)
