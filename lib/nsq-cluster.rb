@@ -11,7 +11,7 @@
 #     cluster.destroy
 #
 
-require 'socket'
+require 'net/http'
 require 'timeout'
 
 require_relative 'nsq-cluster/nsqlookupd'
@@ -19,7 +19,7 @@ require_relative 'nsq-cluster/nsqd'
 require_relative 'nsq-cluster/nsqadmin'
 
 class NsqCluster
-  PORTSCAN_INTERVAL = 0.01
+  HTTPCHECK_INTERVAL = 0.01
   attr_reader :nsqd, :nsqlookupd, :nsqadmin
 
   def initialize(opts = {})
@@ -89,8 +89,8 @@ class NsqCluster
     puts "Waiting for cluster to launch..." unless @silent
     begin
       Timeout::timeout(timeout) do
-        service_ports.each do |port, protocol|
-          wait_for_port(port, protocol)
+        service_http_ports.each do |port|
+          wait_for_http_port(port)
         end
         puts "Cluster launched." unless @silent
       end
@@ -101,35 +101,31 @@ class NsqCluster
 
 
   private
-  def service_ports
-    ports = {}
-    ports[nsqadmin.http_port] = :http if nsqadmin
-    nsqlookupd.each do |n|
-      ports[n.tcp_port] = :tcp
-      ports[n.http_port] = :http
-    end
-    nsqd.each do |n|
-      ports[n.tcp_port] = :tcp
-      ports[n.http_port] = :http
-    end
+  def service_http_ports
+    ports = []
+    # nsqadmin responds to /ping as well, even though it is not documented.
+    ports << nsqadmin.http_port if nsqadmin
+    nsqlookupd.each {|n| ports << n.http_port}
+    nsqd.each {|n| ports << n.http_port}
+
     ports
   end
 
 
-  def wait_for_port(port, protocol)
+  def wait_for_http_port(port)
     port_open = false
     until port_open do
       begin
-        sock = TCPSocket.new('127.0.0.1', port)
-        port_open = true
-        puts "#{protocol.to_s.upcase} port #{port} open." unless @silent
-        if protocol == :tcp
-          puts "You may safely ignore: 'ERROR: failed to read protocol version - EOF'" unless @silent
+        response = Net::HTTP.get_response(URI("http://localhost:#{port}/ping"))
+        if response.is_a?(Net::HTTPSuccess)
+          port_open = true
+          puts "HTTP port #{port} responded to /ping." unless @silent
+        else
+          sleep HTTPCHECK_INTERVAL
         end
-        sock.close
       rescue Errno::ECONNREFUSED
+        sleep HTTPCHECK_INTERVAL
       end
-      sleep PORTSCAN_INTERVAL if !port_open
     end
   end
 end
