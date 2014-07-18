@@ -26,20 +26,9 @@ Jeweler::Tasks.new do |gem|
 end
 Jeweler::RubygemsDotOrgTasks.new
 
-require 'rake/testtask'
-Rake::TestTask.new(:spec) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'spec/**/*_spec.rb'
-  test.verbose = true
-end
-
-desc "Code coverage detail"
-task :simplecov do
-  ENV['COVERAGE'] = "true"
-  Rake::Task['test'].execute
-end
-
+require 'rspec/core/rake_task'
 task :default => :spec
+RSpec::Core::RakeTask.new
 
 require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
