@@ -1,4 +1,5 @@
 class ProcessWrapper
+  HTTPCHECK_INTERVAL = 0.01
 
 
   def initialize(opts = {})
@@ -48,5 +49,29 @@ class ProcessWrapper
     end
   end
 
-end
 
+  def block_until_running
+    if respond_to?(:http_port) && respond_to?(:host)
+      wait_for_http_port(http_port, host)
+    end
+  end
+
+
+  private
+  def wait_for_http_port(port, host)
+    port_open = false
+    until port_open do
+      begin
+        response = Net::HTTP.get_response(URI("http://#{host}:#{port}/ping"))
+        if response.is_a?(Net::HTTPSuccess)
+          port_open = true
+          puts "HTTP port #{port} responded to /ping." unless @silent
+        else
+          sleep HTTPCHECK_INTERVAL
+        end
+      rescue Errno::ECONNREFUSED
+        sleep HTTPCHECK_INTERVAL
+      end
+    end
+  end
+end

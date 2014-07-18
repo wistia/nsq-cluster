@@ -17,9 +17,9 @@ describe NsqCluster do
     it 'ensures nsql cluster is running after execution' do
       cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
       cluster.block_until_running
-      cluster.send(:running_http_services).each do |port, host|
+      cluster.send(:all_services).each do |service|
         # This will raise an exception if the service is not yet running.
-        sock = TCPSocket.new(host, port)
+        sock = TCPSocket.new(service.host, service.http_port)
         sock.close
       end
       cluster.destroy
@@ -32,9 +32,9 @@ describe NsqCluster do
         nsqadmin: true
       )
       cluster.block_until_running
-      cluster.send(:running_http_services).each do |port, host|
+      cluster.send(:all_services).each do |service|
         # This will raise an exception if the service is not yet running.
-        sock = TCPSocket.new(host, port)
+        sock = TCPSocket.new(service.host, service.http_port)
         sock.close
       end
       cluster.destroy
@@ -42,28 +42,18 @@ describe NsqCluster do
   end
 
 
-  describe '#service_ports' do
-    it 'includes TCP and HTTP ports for nsqd, nsqlookupd and nsqadmin' do
-      cluster = NsqCluster.new({
-        nsqd_count: 2,
-        nsqlookupd_count: 2,
-        nsqadmin: true,
-        silent: true
-      })
-      # 2 HTTP nsqd, 2 HTTP nsqlookup, 1 HTTP nsqadmin
-      (cluster.send :running_http_services).keys.count.must_equal 5
-      cluster.destroy
-    end
-    it 'works when nsqadmin not enabled' do
-      cluster = NsqCluster.new({
-        nsqd_count: 2,
-        nsqlookupd_count: 2,
-        nsqadmin: false,
-        silent: true
-      })
-      # 2 HTTP nsqd, 2 HTTP nsqlookup
-      (cluster.send :running_http_services).keys.count.must_equal 4
-      cluster.destroy
+  describe '#all_services' do
+    it 'contains array with every instance of every service' do
+      # cluster = NsqCluster.new(
+      #   nsqd_count: 3,
+      #   nsqlookupd_count: 2,
+      #   nsqadmin: true
+      # )
+      # all_services = cluster.send :all_services
+      # expect(all_services.count).to equal(6)
+      # expect(all_services.map{|m| m.is_a?(Nsqd)}.count).to equal(3)
+      # expect(all_services.map{|m| m.is_a?(Nsqlookupd)}.count).to equal(2)
+      # expect(all_services.map{|m| m.is_a?(Nsqadmin)}.count).to equal(1)
     end
   end
 end

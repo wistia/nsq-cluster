@@ -19,7 +19,6 @@ require_relative 'nsq-cluster/nsqd'
 require_relative 'nsq-cluster/nsqadmin'
 
 class NsqCluster
-  HTTPCHECK_INTERVAL = 0.01
   attr_reader :nsqd, :nsqlookupd, :nsqadmin
 
   def initialize(opts = {})
@@ -31,7 +30,6 @@ class NsqCluster
       nsqd_options: {},
       silent: true
     }.merge(opts)
-
     @silent = opts[:silent]
 
     @nsqlookupd = create_nsqlookupds(opts[:nsqlookupd_count], opts[:nsqdlookupd_options])
@@ -39,7 +37,7 @@ class NsqCluster
     @nsqadmin = create_nsqadmin if opts[:nsqadmin]
 
     # start everything!
-    (@nsqlookupd + @nsqd + [@nsqadmin]).compact.each { |d| d.start }
+    all_services.each { |d| d.start }
   end
 
 
@@ -89,9 +87,7 @@ class NsqCluster
     puts "Waiting for cluster to launch..." unless @silent
     begin
       Timeout::timeout(timeout) do
-        running_http_services.each do |port, host|
-          wait_for_http_port(port, host)
-        end
+        all_services.each {|service| service.block_until_running}
         puts "Cluster launched." unless @silent
       end
     rescue Timeout::Error
@@ -101,28 +97,8 @@ class NsqCluster
 
 
   private
-  def running_http_services
-    (nsqlookupd + nsqd + [nsqadmin]).compact.inject({}) do |result, item|
-      result[item.http_port] = item.host
-      result
-    end
-  end
-
-
-  def wait_for_http_port(port, host)
-    port_open = false
-    until port_open do
-      begin
-        response = Net::HTTP.get_response(URI("http://#{host}:#{port}/ping"))
-        if response.is_a?(Net::HTTPSuccess)
-          port_open = true
-          puts "HTTP port #{port} responded to /ping." unless @silent
-        else
-          sleep HTTPCHECK_INTERVAL
-        end
-      rescue Errno::ECONNREFUSED
-        sleep HTTPCHECK_INTERVAL
-      end
-    end
+  def all_services
+    # nsqadmin responds to /ping as well, even though it is not documented.
+    (@nsqlookupd + @nsqd + [@nsqadmin]).compact
   end
 end
