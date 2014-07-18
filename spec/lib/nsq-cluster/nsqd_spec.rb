@@ -1,4 +1,6 @@
-require 'helper'
+require_relative '../../spec_helper'
+
+require 'json'
 
 describe Nsqd do
 
@@ -15,47 +17,47 @@ describe Nsqd do
   describe 'api endpoints' do
     describe '#ping' do
       it 'should return status 200' do
-        @nsqd.ping.code.must_equal '200'
+        expect(@nsqd.ping.code).to eql('200')
       end
     end
 
     describe '#info' do
       it 'should return status 200' do
-        @nsqd.info.code.must_equal '200'
+        expect(@nsqd.info.code).to eql('200')
       end
     end
 
     describe '#stats' do
       it 'should return status 200' do
-        @nsqd.stats.code.must_equal '200'
+        expect(@nsqd.stats.code).to eql('200')
       end
 
       it 'should return JSON' do
-        JSON.parse(@nsqd.stats.body).must_be_kind_of Hash
+        expect(JSON.parse(@nsqd.stats.body).is_a?(Hash)).to equal(true)
       end
     end
 
     describe '#pub' do
       it 'should return status 200' do
         resp = @nsqd.pub('test', 'a message')
-        resp.code.must_equal '200'
+        expect(resp.code).to eql('200')
       end
     end
 
     describe '#mpub' do
       it 'should return status 200' do
         resp = @nsqd.mpub('test', 'a message', 'another message', 'last message')
-        resp.code.must_equal '200'
+        expect(resp.code).to eql('200')
       end
 
       it 'should create multiple messages' do
-        resp = @nsqd.mpub('test', 'a message', 'another message', 'last message')
+        @nsqd.mpub('test', 'a message', 'another message', 'last message')
 
         topic = JSON.parse(@nsqd.stats.body)['data']['topics'].select do |t|
           t['topic_name'] == 'test'
         end.first
 
-        topic['message_count'].must_equal 3
+        expect(topic['message_count']).to equal(3)
       end
     end
 
@@ -63,12 +65,14 @@ describe Nsqd do
       it 'should return status 200' do
         resp1 = @nsqd.create(topic: 'test')
         resp2 = @nsqd.create(topic: 'test', channel: 'default')
-        resp1.code.must_equal '200'
-        resp2.code.must_equal '200'
+        expect(resp1.code).to eql('200')
+        expect(resp2.code).to eql('200')
       end
 
       it 'should raise error if topic is not specified' do
-        proc { @nsqd.create(channel: 'default') }.must_raise RuntimeError
+        expect(
+          proc { @nsqd.create(channel: 'default') }
+        ).to raise_error(RuntimeError)
       end
     end
 
@@ -81,14 +85,14 @@ describe Nsqd do
         it 'should return status 200' do
           @nsqd.create(topic: 'test', channel: 'default')
           resp = @nsqd.delete(topic: 'test', channel: 'default')
-          resp.code.must_equal '200'
+          expect(resp.code).to eql('200')
         end
       end
 
       context 'a non-existant channel' do
         it 'should return status 500' do
           resp = @nsqd.delete(topic: 'test', channel: 'default')
-          resp.code.must_equal '500'
+          expect(resp.code).to eql('500')
         end
       end
     end
@@ -102,14 +106,14 @@ describe Nsqd do
         it 'should return status 200' do
           @nsqd.create(topic: 'test', channel: 'default')
           resp = @nsqd.pause(topic: 'test', channel: 'default')
-          resp.code.must_equal '200'
+          expect(resp.code).to eql('200')
         end
       end
 
       context 'a non-existant channel' do
         it 'should return status 500' do
           resp = @nsqd.pause(topic: 'test', channel: 'default')
-          resp.code.must_equal '500'
+          expect(resp.code).to eql('500')
         end
       end
     end
@@ -123,14 +127,14 @@ describe Nsqd do
         it 'should return status 200' do
           @nsqd.create(topic: 'test', channel: 'default')
           resp = @nsqd.unpause(topic: 'test', channel: 'default')
-          resp.code.must_equal '200'
+          expect(resp.code).to eql('200')
         end
       end
 
       context 'a non-existant channel' do
         it 'should return status 500' do
           resp = @nsqd.unpause(topic: 'test', channel: 'default')
-          resp.code.must_equal '500'
+          expect(resp.code).to eql('500')
         end
       end
     end
@@ -144,14 +148,14 @@ describe Nsqd do
         it 'should return status 200' do
           @nsqd.create(topic: 'test', channel: 'default')
           resp = @nsqd.empty(topic: 'test', channel: 'default')
-          resp.code.must_equal '200'
+          expect(resp.code).to eql('200')
         end
       end
 
       context 'a non-existant channel' do
         it 'should return status 500' do
           resp = @nsqd.empty(topic: 'test', channel: 'default')
-          resp.code.must_equal '500'
+          expect(resp.code).to eql('500')
         end
       end
     end

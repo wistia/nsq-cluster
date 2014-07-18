@@ -1,3 +1,7 @@
 source "http://rubygems.org"
 
-gemspec
+group :development do
+  gem 'fakeweb'
+  gem 'jeweler'
+  gem 'rspec'
+end

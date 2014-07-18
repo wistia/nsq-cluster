@@ -27,9 +27,9 @@ end
 Jeweler::RubygemsDotOrgTasks.new
 
 require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
+Rake::TestTask.new(:spec) do |test|
   test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/*_spec.rb'
+  test.pattern = 'spec/**/*_spec.rb'
   test.verbose = true
 end
 
@@ -39,7 +39,7 @@ task :simplecov do
   Rake::Task['test'].execute
 end
 
-task :default => :test
+task :default => :spec
 
 require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|

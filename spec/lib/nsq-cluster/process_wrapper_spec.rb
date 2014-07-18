@@ -1,4 +1,4 @@
-require 'helper'
+require_relative '../../spec_helper'
 
 describe ProcessWrapper do
   describe '#block_until_running' do

@@ -1,4 +1,4 @@
-require 'helper'
+require_relative '../spec_helper'
 
 require 'socket'
 
@@ -6,8 +6,8 @@ describe NsqCluster do
   describe '#initialize' do
     it 'should start up a cluster for realsies' do
       cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
-      cluster.nsqd.length.must_equal 1
-      cluster.nsqlookupd.length.must_equal 1
+      expect(cluster.nsqd.length).to equal(1)
+      expect(cluster.nsqlookupd.length).to equal(1)
       cluster.destroy
     end
   end
@@ -18,9 +18,12 @@ describe NsqCluster do
       cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
       cluster.block_until_running
       cluster.send(:all_services).each do |service|
-        # This will raise an exception if the service is not yet running.
-        sock = TCPSocket.new(service.host, service.http_port)
-        sock.close
+        expect(
+          lambda {
+            sock = TCPSocket.new(service.host, service.http_port)
+            sock.close
+          }
+        ).not_to raise_error
       end
       cluster.destroy
     end
@@ -33,9 +36,12 @@ describe NsqCluster do
       )
       cluster.block_until_running
       cluster.send(:all_services).each do |service|
-        # This will raise an exception if the service is not yet running.
-        sock = TCPSocket.new(service.host, service.http_port)
-        sock.close
+        expect(
+          lambda {
+            sock = TCPSocket.new(service.host, service.http_port)
+            sock.close
+          }
+        ).not_to raise_error
       end
       cluster.destroy
     end

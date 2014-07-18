@@ -1,4 +1,4 @@
-require 'helper'
+require_relative '../../spec_helper'
 
 describe Nsqlookupd do
 
@@ -16,31 +16,31 @@ describe Nsqlookupd do
   describe 'api endpoints' do
     describe '#ping' do
       it 'should return status 200' do
-        @nsqlookupd.ping.code.must_equal '200'
+        expect(@nsqlookupd.ping.code).to eql('200')
       end
     end
 
     describe '#info' do
       it 'should return status 200' do
-        @nsqlookupd.info.code.must_equal '200'
+        expect(@nsqlookupd.info.code).to eql('200')
       end
     end
 
     describe '#nodes' do
       it 'should return status 200' do
-        @nsqlookupd.nodes.code.must_equal '200'
+        expect(@nsqlookupd.nodes.code).to eql('200')
       end
     end
 
     describe '#topic' do
       it 'should return status 200' do
-        @nsqlookupd.topics.code.must_equal '200'
+        expect(@nsqlookupd.topics.code).to eql('200')
       end
     end
 
     describe '#channels' do
       it 'should return status 200' do
-        @nsqlookupd.channels('default').code.must_equal '200'
+        expect(@nsqlookupd.channels('default').code).to eql('200')
       end
     end
 
@@ -51,13 +51,13 @@ describe Nsqlookupd do
         end
 
         it 'should return status 200' do
-          @nsqlookupd.lookup('test').code.must_equal '200'
+          expect(@nsqlookupd.lookup('test').code).to eql('200')
         end
       end
 
       context 'a non-existant topic' do
         it 'should return status 500' do
-          @nsqlookupd.lookup('wtf').code.must_equal '500'
+          expect(@nsqlookupd.lookup('wtf').code).to eql('500')
         end
       end
     end
