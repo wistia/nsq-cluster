@@ -53,6 +53,17 @@ class ProcessWrapper
   def block_until_running
     if respond_to?(:http_port) && respond_to?(:host)
       wait_for_http_port(http_port, host)
+    else
+      raise "Can't block without http port and host"
+    end
+  end
+
+
+  def block_until_stopped
+    if respond_to?(:http_port) && respond_to?(:host)
+      wait_for_no_http_port(http_port, host)
+    else
+      raise "Can't block without http port and host"
     end
   end
 
@@ -71,6 +82,20 @@ class ProcessWrapper
         end
       rescue Errno::ECONNREFUSED
         sleep HTTPCHECK_INTERVAL
+      end
+    end
+  end
+
+
+  def wait_for_no_http_port(port, host)
+    port_closed = false
+    until port_closed do
+      begin
+        Net::HTTP.get_response(URI("http://#{host}:#{port}/ping"))
+        sleep HTTPCHECK_INTERVAL
+      rescue Errno::ECONNREFUSED
+        puts "HTTP port #{port} stopped responding to /ping." unless @silent
+        port_closed = true
       end
     end
   end

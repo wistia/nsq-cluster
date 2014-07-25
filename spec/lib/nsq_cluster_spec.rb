@@ -15,24 +15,8 @@ describe NsqCluster do
 
   describe '#block_until_running' do
     it 'ensures nsql cluster is running after execution' do
-      cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
-      cluster.block_until_running
-      cluster.send(:all_services).each do |service|
-        expect(
-          lambda {
-            sock = TCPSocket.new(service.host, service.http_port)
-            sock.close
-          }
-        ).not_to raise_error
-      end
-      cluster.destroy
-    end
-
-    it 'supports nsqadmin' do
       cluster = NsqCluster.new(
-        nsqd_count: 1,
-        nsqlookupd_count: 1,
-        nsqadmin: true
+        nsqd_count: 1, nsqlookupd_count: 1, nsqadmin: true
       )
       cluster.block_until_running
       cluster.send(:all_services).each do |service|
@@ -44,6 +28,31 @@ describe NsqCluster do
         ).not_to raise_error
       end
       cluster.destroy
+    end
+  end
+
+
+  describe '#block_until_stopped' do
+    it 'ensures nsql cluster is stopped after execution' do
+      cluster = NsqCluster.new(
+        nsqd_count: 3, nsqlookupd_count: 3, nsqadmin: true
+      )
+      cluster.block_until_running
+      services = cluster.send(:all_services)
+      services.each do |service|
+        expect{
+          sock = TCPSocket.new(service.host, service.http_port)
+          sock.close
+        }.not_to raise_error
+      end
+      cluster.destroy
+      cluster.block_until_stopped
+      services.each do |service|
+        expect{
+          sock = TCPSocket.new(service.host, service.http_port)
+          sock.close
+        }.to raise_error(Errno::ECONNREFUSED)
+      end
     end
   end
 

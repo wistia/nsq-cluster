@@ -30,6 +30,7 @@ cluster.block_until_running
 Signal.trap('INT') do
   print 'Shutting down ... '
   cluster.destroy
+  cluster.block_until_stopped
   puts 'done'
   exit
 end

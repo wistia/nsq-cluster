@@ -73,7 +73,7 @@ class NsqCluster
 
 
   def destroy
-    (@nsqd + @nsqlookupd).each { |d| d.destroy }
+    all_services.each{|s| s.destroy}
   end
 
 
@@ -83,7 +83,7 @@ class NsqCluster
   end
 
 
-  def block_until_running(timeout = 3)
+  def block_until_running(timeout = 10)
     puts "Waiting for cluster to launch..." unless @silent
     begin
       Timeout::timeout(timeout) do
@@ -91,7 +91,20 @@ class NsqCluster
         puts "Cluster launched." unless @silent
       end
     rescue Timeout::Error
-      puts "ERROR: Cluster did not fully launch within #{timeout} seconds."
+      raise "Cluster did not fully launch within #{timeout} seconds."
+    end
+  end
+
+
+  def block_until_stopped(timeout = 10)
+    puts "Waiting for cluster to stop..." unless @silent
+    begin
+      Timeout::timeout(timeout) do
+        all_services.each{|service| service.block_until_stopped}
+        puts "Cluster stopped." unless @silent
+      end
+    rescue Timeout::Error
+      raise "Cluster did not fully stop within #{timeout} seconds."
     end
   end
 

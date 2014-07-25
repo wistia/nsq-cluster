@@ -13,6 +13,19 @@ class Nsqadmin < ProcessWrapper
   end
 
 
+  def stop
+    super
+    str = "ps | grep nsqadmin | "
+    str += %Q{grep "\\-\\-http\\-address=#{Regexp.escape(host.to_s)}:#{Regexp.escape(http_port.to_s)}" | }
+    @lookupd.each do |lookupd|
+      str += %Q{grep "\\-\\-lookupd\\-http\\-address=#{Regexp.escape(lookupd.host)}:#{lookupd.http_port}" | }
+    end
+    str += "grep -v grep"
+    pid = `#{str}`.split(/\s+/)[0]
+    Process.kill('TERM', pid) if pid.to_i > 0
+  end
+
+
   def command
     'nsqadmin'
   end
