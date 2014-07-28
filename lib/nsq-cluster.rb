@@ -40,7 +40,7 @@ class NsqCluster
       # start everything!
       all_services.each { |d| d.start }
     rescue Exception => ex
-      # if we hit and error, stop everything that we started
+      # if we hit an error, stop everything that we started
       destroy
       raise ex
     end
