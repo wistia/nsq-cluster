@@ -97,13 +97,9 @@ class ProcessWrapper
   def http_port_open?
     begin
       response = Net::HTTP.get_response(URI("http://#{host}:#{http_port}/ping"))
-      if response.is_a?(Net::HTTPSuccess)
-        true
-      else
-        false
-      end
+      return response.is_a?(Net::HTTPSuccess)
     rescue Errno::ECONNREFUSED
-      false
+      return false
     end
   end
 
