@@ -36,8 +36,14 @@ class NsqCluster
     @nsqd = create_nsqds(opts[:nsqd_count], opts[:nsqd_options])
     @nsqadmin = create_nsqadmin if opts[:nsqadmin]
 
-    # start everything!
-    all_services.each { |d| d.start }
+    begin
+      # start everything!
+      all_services.each { |d| d.start }
+    rescue Exception => ex
+      # if we hit and error, stop everything that we started
+      destroy
+      raise ex
+    end
   end
 
 

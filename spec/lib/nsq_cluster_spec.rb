@@ -3,12 +3,54 @@ require_relative '../spec_helper'
 require 'socket'
 
 describe NsqCluster do
+
+  def expect_port_to_be_open(host, port)
+    expect{
+      sock = TCPSocket.new(host, port)
+      sock.close
+    }.not_to raise_error
+  end
+
+  def expect_port_to_be_closed(host, port)
+    expect{
+      sock = TCPSocket.new(host, port)
+      sock.close
+    }.to raise_error(Errno::ECONNREFUSED)
+  end
+
   describe '#initialize' do
     it 'should start up a cluster' do
       cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
       expect(cluster.nsqd.length).to equal(1)
       expect(cluster.nsqlookupd.length).to equal(1)
       cluster.destroy
+    end
+
+    it 'should raise an error if a component of the cluster is already started' do
+      old_cluster = NsqCluster.new(nsqd_count: 1)
+      old_cluster.block_until_running
+
+      expect{
+        new_cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
+      }.to raise_error
+
+      old_cluster.destroy
+    end
+
+    it 'should clean up any services it started if it errors out while starting' do
+      old_cluster = NsqCluster.new(nsqd_count: 1)
+      old_cluster.block_until_running
+
+      begin
+        NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
+      rescue
+        # ignore the error
+      end
+
+      lookupd = Nsqlookupd.new
+      expect_port_to_be_closed(lookupd.host, lookupd.tcp_port)
+
+      old_cluster.destroy
     end
   end
 
@@ -20,12 +62,7 @@ describe NsqCluster do
       )
       cluster.block_until_running
       cluster.send(:all_services).each do |service|
-        expect(
-          lambda {
-            sock = TCPSocket.new(service.host, service.http_port)
-            sock.close
-          }
-        ).not_to raise_error
+        expect_port_to_be_open(service.host, service.http_port)
       end
       cluster.destroy
     end
@@ -40,18 +77,12 @@ describe NsqCluster do
       cluster.block_until_running
       services = cluster.send(:all_services)
       services.each do |service|
-        expect{
-          sock = TCPSocket.new(service.host, service.http_port)
-          sock.close
-        }.not_to raise_error
+        expect_port_to_be_open(service.host, service.http_port)
       end
       cluster.destroy
       cluster.block_until_stopped
       services.each do |service|
-        expect{
-          sock = TCPSocket.new(service.host, service.http_port)
-          sock.close
-        }.to raise_error(Errno::ECONNREFUSED)
+        expect_port_to_be_closed(service.host, service.http_port)
       end
     end
   end
