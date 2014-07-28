@@ -26,7 +26,7 @@ describe NsqCluster do
       cluster.destroy
     end
 
-    it 'should raise an error if a component of the cluster is already started' do
+    it 'should raise an exception if a component of the cluster is already started' do
       old_cluster = NsqCluster.new(nsqd_count: 1)
       old_cluster.block_until_running
 
@@ -51,6 +51,13 @@ describe NsqCluster do
       expect_port_to_be_closed(lookupd.host, lookupd.tcp_port)
 
       old_cluster.destroy
+    end
+
+    it 'should raise an exception if nsqd and friends aren\'t available' do
+      allow_any_instance_of(Nsqd).to receive(:command).and_return('executable-that-does-not-exist')
+      expect{
+        NsqCluster.new(nsqd_count: 1).destroy
+      }.to raise_error(Errno::ENOENT)
     end
   end
 
