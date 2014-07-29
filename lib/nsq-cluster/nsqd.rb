@@ -10,17 +10,20 @@ class Nsqd < ProcessWrapper
 
 
   def initialize(opts = {})
-    @host = opts[:host] || '127.0.0.1'
-    @tcp_port = opts[:tcp_port] || 4150
-    @http_port = opts[:http_port] || 4151
-    @lookupd = opts[:nsqlookupd] || []
-    @msg_timeout = opts[:msg_timeout] || '60s'
-    @broadcast_address = opts[:broadcast_address] || @host
+    super
+
+    @host = opts.delete(:host) || '127.0.0.1'
+    @tcp_port = opts.delete(:tcp_port) || 4150
+    @http_port = opts.delete(:http_port) || 4151
+    @lookupd = opts.delete(:nsqlookupd) || []
+    @broadcast_address = opts.delete(:broadcast_address) || @host
+
+    @extra_args = opts.map do |key, value|
+      "--#{key.to_s.gsub('_', '-')}=#{value}"
+    end
 
     clear_data_directory
     create_data_directory
-
-    super
   end
 
 
@@ -41,7 +44,6 @@ class Nsqd < ProcessWrapper
       %Q(--http-address=#{@host}:#{@http_port}),
       %Q(--data-path=#{data_path}),
       %Q(--worker-id=#{worker_id}),
-      %Q(--msg-timeout=#{@msg_timeout}),
       %Q(--broadcast-address=#{@broadcast_address})
     ]
 
@@ -49,7 +51,7 @@ class Nsqd < ProcessWrapper
       %Q(--lookupd-tcp-address=#{ld.host}:#{ld.tcp_port})
     end
 
-    base_args + lookupd_args
+    base_args + @extra_args + lookupd_args
   end
 
 

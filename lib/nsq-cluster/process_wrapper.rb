@@ -1,9 +1,10 @@
 class ProcessWrapper
   HTTPCHECK_INTERVAL = 0.01
 
+  attr_reader :pid
 
   def initialize(opts = {})
-    @silent = opts[:silent]
+    @silent = opts.delete(:silent)
   end
 
 

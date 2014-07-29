@@ -1,5 +1,5 @@
 require_relative '../spec_helper'
-
+require 'sys/proctable'
 require 'socket'
 
 describe NsqCluster do
@@ -58,6 +58,19 @@ describe NsqCluster do
       expect{
         NsqCluster.new(nsqd_count: 1).destroy
       }.to raise_error(Errno::ENOENT)
+    end
+
+    it 'should accept extra flags for nsqd via nsqd_options' do
+      begin
+        cluster = NsqCluster.new(nsqd_count: 1, nsqd_options: { verbose: true })
+        cluster.block_until_running
+        nsqd = cluster.nsqd.first
+
+        cmd = Sys::ProcTable.ps(nsqd.pid).cmdline
+        expect(cmd).to match(/--verbose=true/)
+      ensure
+        cluster.destroy
+      end
     end
   end
 
