@@ -22,6 +22,21 @@ cluster.nsqd.last.start
 cluster.destroy
 ```
 
+## Flags for nsqd and nsqlookupd
+
+Optionally, you can pass in flags for nsqd and nsqlookupd like this:
+
+```ruby
+NsqCluster.new(
+  nsqd_count: 1,
+  nsqlookupd_count: 1,
+  nsqd_options: { verbose: true },
+  nsqlookupd_options: { verbose: true }
+)
+```
+
+## Send commands to nsqd
+
 Available methods that map to [`nsqd`'s](http://nsq.io/components/nsqd.html) HTTP endpoints.
 
 ```ruby
@@ -51,6 +66,8 @@ nsqd.ping
 # Get general information
 nsqd.info
 ```
+
+## Send commands to nsqlookup
 
 Available methods that map to [`nsqlookupd`'s](http://nsq.io/components/nsqlookupd.html) HTTP endpoints.
 
