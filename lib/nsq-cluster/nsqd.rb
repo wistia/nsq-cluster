@@ -9,7 +9,7 @@ class Nsqd < ProcessWrapper
   attr_reader :host, :tcp_port, :http_port
 
 
-  def initialize(opts = {})
+  def initialize(opts = {}, verbose = false)
     super
 
     @host = opts.delete(:host) || '127.0.0.1'

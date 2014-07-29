@@ -3,8 +3,8 @@ class ProcessWrapper
 
   attr_reader :pid
 
-  def initialize(opts = {})
-    @silent = opts.delete(:silent)
+  def initialize(opts = {}, verbose = false)
+    @verbose = verbose
   end
 
 
@@ -52,10 +52,10 @@ class ProcessWrapper
 
 
   def output
-    if @silent
-      '/dev/null'
-    else
+    if @verbose
       :out
+    else
+      '/dev/null'
     end
   end
 
@@ -83,7 +83,7 @@ class ProcessWrapper
     until http_port_open? do
       sleep HTTPCHECK_INTERVAL
     end
-    puts "HTTP port #{http_port} responded to /ping." unless @silent
+    puts "HTTP port #{http_port} responded to /ping." if @verbose
   end
 
 
@@ -91,7 +91,7 @@ class ProcessWrapper
     until !http_port_open? do
       sleep HTTPCHECK_INTERVAL
     end
-    puts "HTTP port #{http_port} stopped responding to /ping." unless @silent
+    puts "HTTP port #{http_port} stopped responding to /ping." if @verbose
   end
 
 

@@ -28,10 +28,10 @@ class NsqCluster
       nsqd_count: 0,
       nsqadmin: false,
       nsqd_options: {},
-      silent: true
+      verbose: false
     }.merge(opts)
-    @silent = opts[:silent]
 
+    @verbose = opts[:verbose]
     @nsqlookupd = create_nsqlookupds(opts[:nsqlookupd_count], opts[:nsqdlookupd_options])
     @nsqd = create_nsqds(opts[:nsqd_count], opts[:nsqd_options])
     @nsqadmin = create_nsqadmin if opts[:nsqadmin]
@@ -49,31 +49,35 @@ class NsqCluster
 
   def create_nsqlookupds(count, options)
     (0...count).map do |idx|
-      Nsqlookupd.new(options.merge({
-        tcp_port: 4160 + idx * 2,
-        http_port: 4161 + idx * 2,
-        silent: @silent
-      }))
+      Nsqlookupd.new(
+        options.merge({
+          tcp_port: 4160 + idx * 2,
+          http_port: 4161 + idx * 2
+        }),
+        @verbose
+      )
     end
   end
 
 
   def create_nsqds(count, options)
     (0...count).map do |idx|
-      Nsqd.new(options.merge({
-        tcp_port: 4150 + idx * 2,
-        http_port: 4151 + idx * 2,
-        nsqlookupd: @nsqlookupd,
-        silent: @silent
-      }))
+      Nsqd.new(
+        options.merge({
+          tcp_port: 4150 + idx * 2,
+          http_port: 4151 + idx * 2,
+          nsqlookupd: @nsqlookupd,
+        }),
+        @verbose
+      )
     end
   end
 
 
   def create_nsqadmin
     Nsqadmin.new(
-      nsqlookupd: @nsqlookupd,
-      silent: @silent
+      { nsqlookupd: @nsqlookupd },
+      @verbose
     )
   end
 
@@ -90,11 +94,11 @@ class NsqCluster
 
 
   def block_until_running(timeout = 3)
-    puts "Waiting for cluster to launch..." unless @silent
+    puts "Waiting for cluster to launch..." if @verbose
     begin
       Timeout::timeout(timeout) do
         all_services.each {|service| service.block_until_running}
-        puts "Cluster launched." unless @silent
+        puts "Cluster launched." if @verbose
       end
     rescue Timeout::Error
       raise "Cluster did not fully launch within #{timeout} seconds."
@@ -103,11 +107,11 @@ class NsqCluster
 
 
   def block_until_stopped(timeout = 10)
-    puts "Waiting for cluster to stop..." unless @silent
+    puts "Waiting for cluster to stop..." if @verbose
     begin
       Timeout::timeout(timeout) do
         all_services.each{|service| service.block_until_stopped}
-        puts "Cluster stopped." unless @silent
+        puts "Cluster stopped." if @verbose
       end
     rescue Timeout::Error
       raise "Cluster did not fully stop within #{timeout} seconds."

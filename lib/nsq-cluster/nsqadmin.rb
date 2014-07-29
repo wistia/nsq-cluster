@@ -6,7 +6,7 @@ class Nsqadmin < ProcessWrapper
 
   attr_reader :host, :http_port
 
-  def initialize(opts = {})
+  def initialize(opts = {}, verbose = false)
     super
 
     @host = '127.0.0.1'
