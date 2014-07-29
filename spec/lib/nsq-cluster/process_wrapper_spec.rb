@@ -1,6 +1,23 @@
 require_relative '../../spec_helper'
 
 describe ProcessWrapper do
+  describe '#output' do
+    it 'should be :out if verbose is set to true' do
+      pw = ProcessWrapper.new({}, true)
+      expect(pw.output).to eq(:out)
+    end
+
+    it 'should be \'/dev/null\' if verbose is false' do
+      pw = ProcessWrapper.new({}, false)
+      expect(pw.output).to eq('/dev/null')
+    end
+
+    it 'should be \'/dev/null\' if verbose is not set' do
+      pw = ProcessWrapper.new
+      expect(pw.output).to eq('/dev/null')
+    end
+  end
+
   describe '#block_until_running' do
     before do
       ProcessWrapper.send :attr_reader, :http_port

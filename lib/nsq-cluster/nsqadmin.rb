@@ -6,12 +6,16 @@ class Nsqadmin < ProcessWrapper
 
   attr_reader :host, :http_port
 
-  def initialize(opts = {})
-    @host = '127.0.0.1'
-    @http_port = opts[:http_port] || 4171
-    @lookupd = opts[:nsqlookupd] || []
-
+  def initialize(opts = {}, verbose = false)
     super
+
+    @host = '127.0.0.1'
+    @http_port = opts.delete(:http_port) || 4171
+    @lookupd = opts.delete(:nsqlookupd) || []
+
+    @extra_args = opts.map do |key, value|
+      "--#{key.to_s.gsub('_', '-')}=#{value}"
+    end
   end
 
 
@@ -37,7 +41,7 @@ class Nsqadmin < ProcessWrapper
       %Q(--lookupd-http-address=#{ld.host}:#{ld.http_port})
     end
 
-    base_args + lookupd_args
+    base_args + @extra_args + lookupd_args
   end
 
 end

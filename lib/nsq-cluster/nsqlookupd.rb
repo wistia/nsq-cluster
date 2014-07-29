@@ -6,13 +6,17 @@ class Nsqlookupd < ProcessWrapper
 
   attr_reader :host, :tcp_port, :http_port
 
-  def initialize(opts = {})
-    @host = opts[:host] || '127.0.0.1'
-    @tcp_port = opts[:tcp_port] || 4160
-    @http_port = opts[:http_port] || 4161
-    @broadcast_address = opts[:broadcast_address] || @host
-
+  def initialize(opts = {}, verbose = false)
     super
+
+    @host = opts.delete(:host) || '127.0.0.1'
+    @tcp_port = opts.delete(:tcp_port) || 4160
+    @http_port = opts.delete(:http_port) || 4161
+    @broadcast_address = opts.delete(:broadcast_address) || @host
+
+    @extra_args = opts.map do |key, value|
+      "--#{key.to_s.gsub('_', '-')}=#{value}"
+    end
   end
 
 
@@ -26,7 +30,7 @@ class Nsqlookupd < ProcessWrapper
       %Q(--tcp-address=#{@host}:#{@tcp_port}),
       %Q(--http-address=#{@host}:#{@http_port}),
       %Q(--broadcast-address=#{@broadcast_address})
-    ]
+    ] + @extra_args
   end
 
 

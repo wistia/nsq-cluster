@@ -9,7 +9,7 @@ options = {
   nsqd_count: 1,
   nsqlookupd_count: 1,
   nsqadmin: true,
-  silent: false
+  verbose: true
 }
 
 OptionParser.new do |opts|
