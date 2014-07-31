@@ -51,8 +51,7 @@ class NsqCluster
     (0...count).map do |idx|
       Nsqlookupd.new(
         options.merge({
-          tcp_port: 4160 + idx * 2,
-          http_port: 4161 + idx * 2
+          id: idx
         }),
         @verbose
       )
@@ -64,9 +63,8 @@ class NsqCluster
     (0...count).map do |idx|
       Nsqd.new(
         options.merge({
-          tcp_port: 4150 + idx * 2,
-          http_port: 4151 + idx * 2,
-          nsqlookupd: @nsqlookupd,
+          id: idx,
+          nsqlookupd: @nsqlookupd
         }),
         @verbose
       )

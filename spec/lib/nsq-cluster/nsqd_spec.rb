@@ -4,6 +4,21 @@ require 'json'
 
 describe Nsqd do
 
+  describe '::new' do
+    it 'should have tcp_port and http_port set by default' do
+      nsqd = Nsqd.new
+      expect(nsqd.tcp_port).to eq(4150)
+      expect(nsqd.http_port).to eq(4151)
+    end
+
+    it 'should set tcp_port and http_port based on id if they\'re not specified' do
+      id = 5
+      nsqd = Nsqd.new(id: id)
+      expect(nsqd.tcp_port).to eq(4150 + id * 2)
+      expect(nsqd.http_port).to eq(4151 + id * 2)
+    end
+  end
+
   describe '#args' do
     it 'includes arbitrary options passed in to the constructor' do
       nsqd = Nsqd.new(some_random_flag: '60s')
