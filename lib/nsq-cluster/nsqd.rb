@@ -6,15 +6,16 @@ class Nsqd < ProcessWrapper
   include HTTPWrapper
 
 
-  attr_reader :host, :tcp_port, :http_port
+  attr_reader :host, :tcp_port, :http_port, :id
 
 
   def initialize(opts = {}, verbose = false)
     super
 
+    @id = opts.delete(:id) || 0
     @host = opts.delete(:host) || '127.0.0.1'
-    @tcp_port = opts.delete(:tcp_port) || 4150
-    @http_port = opts.delete(:http_port) || 4151
+    @tcp_port = opts.delete(:tcp_port) || (4150 + @id * 2)
+    @http_port = opts.delete(:http_port) || (4151 + @id * 2)
     @lookupd = opts.delete(:nsqlookupd) || []
     @broadcast_address = opts.delete(:broadcast_address) || @host
 
@@ -43,7 +44,7 @@ class Nsqd < ProcessWrapper
       %Q(--tcp-address=#{@host}:#{@tcp_port}),
       %Q(--http-address=#{@host}:#{@http_port}),
       %Q(--data-path=#{data_path}),
-      %Q(--worker-id=#{worker_id}),
+      %Q(--worker-id=#{id}),
       %Q(--broadcast-address=#{@broadcast_address})
     ]
 
@@ -55,14 +56,9 @@ class Nsqd < ProcessWrapper
   end
 
 
-  def worker_id
-    @tcp_port
-  end
-
-
   # find or create a temporary data directory for this instance
   def data_path
-    "/tmp/nsqd-#{worker_id}"
+    "/tmp/nsqd-#{id}"
   end
 
 

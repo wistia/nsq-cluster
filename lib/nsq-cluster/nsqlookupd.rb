@@ -9,9 +9,10 @@ class Nsqlookupd < ProcessWrapper
   def initialize(opts = {}, verbose = false)
     super
 
+    @id = opts.delete(:id) || 0
     @host = opts.delete(:host) || '127.0.0.1'
-    @tcp_port = opts.delete(:tcp_port) || 4160
-    @http_port = opts.delete(:http_port) || 4161
+    @tcp_port = opts.delete(:tcp_port) || (4160 + @id * 2)
+    @http_port = opts.delete(:http_port) || (4161 + @id * 2)
     @broadcast_address = opts.delete(:broadcast_address) || @host
 
     @extra_args = opts.map do |key, value|

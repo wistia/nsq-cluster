@@ -38,7 +38,10 @@ class NsqCluster
 
     begin
       # start everything!
-      all_services.each { |d| d.start }
+      all_services.each{|d| d.start(async: true)}
+
+      # by default, block execution until everything is started
+      block_until_running unless opts[:async]
     rescue Exception => ex
       # if we hit an error, stop everything that we started
       destroy
@@ -51,8 +54,7 @@ class NsqCluster
     (0...count).map do |idx|
       Nsqlookupd.new(
         options.merge({
-          tcp_port: 4160 + idx * 2,
-          http_port: 4161 + idx * 2
+          id: idx
         }),
         @verbose
       )
@@ -64,9 +66,8 @@ class NsqCluster
     (0...count).map do |idx|
       Nsqd.new(
         options.merge({
-          tcp_port: 4150 + idx * 2,
-          http_port: 4151 + idx * 2,
-          nsqlookupd: @nsqlookupd,
+          id: idx,
+          nsqlookupd: @nsqlookupd
         }),
         @verbose
       )

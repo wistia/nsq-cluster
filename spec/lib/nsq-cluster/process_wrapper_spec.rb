@@ -18,6 +18,7 @@ describe ProcessWrapper do
     end
   end
 
+
   describe '#block_until_running' do
     before do
       ProcessWrapper.send :attr_reader, :http_port
