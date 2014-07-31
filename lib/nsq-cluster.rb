@@ -38,7 +38,10 @@ class NsqCluster
 
     begin
       # start everything!
-      all_services.each { |d| d.start }
+      all_services.each { |d| d.start(async: true) }
+
+      # by default, block execution until everything is started
+      block_until_running unless opts[:async]
     rescue Exception => ex
       # if we hit an error, stop everything that we started
       destroy

@@ -19,7 +19,7 @@ class Nsqadmin < ProcessWrapper
   end
 
 
-  def stop
+  def stop(opts = {})
     Sys::ProcTable.ps.select{|pe| pe.ppid == @pid}.each do |child_pid|
       Process.kill('TERM', child_pid)
     end

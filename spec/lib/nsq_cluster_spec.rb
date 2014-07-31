@@ -26,9 +26,20 @@ describe NsqCluster do
       cluster.destroy
     end
 
+    it 'should block until its fully running' do
+      expect_any_instance_of(NsqCluster).to receive(:block_until_running).and_call_original
+      cluster = NsqCluster.new
+      cluster.destroy
+    end
+
+    it 'should not block until its fully running if given the :async option' do
+      expect_any_instance_of(NsqCluster).not_to receive(:block_until_running)
+      cluster = NsqCluster.new(async: true)
+      cluster.destroy
+    end
+
     it 'should raise an exception if a component of the cluster is already started' do
       old_cluster = NsqCluster.new(nsqd_count: 1)
-      old_cluster.block_until_running
 
       expect{
         new_cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
@@ -39,7 +50,6 @@ describe NsqCluster do
 
     it 'should clean up any services it started if it errors out while starting' do
       old_cluster = NsqCluster.new(nsqd_count: 1)
-      old_cluster.block_until_running
 
       begin
         NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
@@ -63,7 +73,6 @@ describe NsqCluster do
     it 'should accept extra flags for nsqd via nsqd_options' do
       begin
         cluster = NsqCluster.new(nsqd_count: 1, nsqd_options: { verbose: true })
-        cluster.block_until_running
         nsqd = cluster.nsqd.first
 
         cmd = Sys::ProcTable.ps(nsqd.pid).cmdline
@@ -76,9 +85,9 @@ describe NsqCluster do
 
 
   describe '#block_until_running' do
-    it 'ensures nsql cluster is running after execution' do
+    it 'ensures nsq cluster is running after execution' do
       cluster = NsqCluster.new(
-        nsqd_count: 1, nsqlookupd_count: 1, nsqadmin: true
+        nsqd_count: 1, nsqlookupd_count: 1, nsqadmin: true, async: true
       )
       cluster.block_until_running
       cluster.send(:all_services).each do |service|
@@ -94,7 +103,6 @@ describe NsqCluster do
       cluster = NsqCluster.new(
         nsqd_count: 3, nsqlookupd_count: 3, nsqadmin: true
       )
-      cluster.block_until_running
       services = cluster.send(:all_services)
       services.each do |service|
         expect_port_to_be_open(service.host, service.http_port)

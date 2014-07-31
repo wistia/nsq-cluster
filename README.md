@@ -6,14 +6,8 @@ Easily start up a local NSQ cluster. This is great for testing.
 # Start a cluster of 3 nsqd's and 2 nsqlookupd's
 cluster = NsqCluster.new(nsqd_count: 3, nsqlookupd_count: 2)
 
-# Optionally, block until the cluster is up and running
-cluster.block_until_running
-
 # Stop the 3rd nsqd instance
 cluster.nsqd.last.stop
-
-# Wait until it's stopped
-cluster.nsqd.last.block_until_stopped
 
 # Start it back up again
 cluster.nsqd.last.start

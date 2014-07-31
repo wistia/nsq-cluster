@@ -8,22 +8,24 @@ class ProcessWrapper
   end
 
 
-  def start
+  def start(opts = {})
     raise "#{command} is already running" if running? || another_instance_is_running?
     @pid = spawn(command, *args, [:out, :err] => output)
+    block_until_running unless opts[:async]
   end
 
 
-  def stop
+  def stop(opts = {})
     raise "#{command} is not running" unless running?
     Process.kill('TERM', @pid)
     Process.waitpid(@pid)
     @pid = nil
+    block_until_stopped unless opts[:async]
   end
 
 
   def destroy
-    stop if running?
+    stop(async: true) if running?
   end
 
 
