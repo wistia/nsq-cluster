@@ -6,7 +6,7 @@ class Nsqd < ProcessWrapper
   include HTTPWrapper
 
 
-  attr_reader :host, :tcp_port, :http_port, :id
+  attr_reader :host, :tcp_port, :http_port, :id, :base_port
 
 
   def initialize(opts = {}, verbose = false)
@@ -14,8 +14,13 @@ class Nsqd < ProcessWrapper
 
     @id = opts.delete(:id) || 0
     @host = opts.delete(:host) || '127.0.0.1'
-    @tcp_port = opts.delete(:tcp_port) || (4150 + @id * 2)
-    @http_port = opts.delete(:http_port) || (4151 + @id * 2)
+
+    # Use a non-standard nsqd port by default so as to not conflict with any
+    # local instances. This is helpful when running tests!
+    @base_port = opts.delete(:base_port) || 4250
+
+    @tcp_port = opts.delete(:tcp_port) || (@base_port + @id * 2)
+    @http_port = opts.delete(:http_port) || (@base_port + 1 + @id * 2)
     @lookupd = opts.delete(:nsqlookupd) || []
     @broadcast_address = opts.delete(:broadcast_address) || @host
 

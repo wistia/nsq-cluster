@@ -9,7 +9,9 @@ options = {
   nsqd_count: 1,
   nsqlookupd_count: 1,
   nsqadmin: true,
-  verbose: true
+  verbose: true,
+  nsqd_options: { base_port: 4150 },
+  nsqlookupd_options: { base_port: 4160 }
 }
 
 OptionParser.new do |opts|

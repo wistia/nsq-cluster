@@ -4,15 +4,20 @@ require_relative 'http_wrapper'
 class Nsqlookupd < ProcessWrapper
   include HTTPWrapper
 
-  attr_reader :host, :tcp_port, :http_port
+  attr_reader :host, :tcp_port, :http_port, :base_port
 
   def initialize(opts = {}, verbose = false)
     super
 
     @id = opts.delete(:id) || 0
     @host = opts.delete(:host) || '127.0.0.1'
-    @tcp_port = opts.delete(:tcp_port) || (4160 + @id * 2)
-    @http_port = opts.delete(:http_port) || (4161 + @id * 2)
+
+    # Use a non-standard nsqlookupd port by default so as to not conflict with
+    # any local instances. This is helpful when running tests!
+    @base_port = opts.delete(:base_port) || 4360
+
+    @tcp_port = opts.delete(:tcp_port) || (@base_port + @id * 2)
+    @http_port = opts.delete(:http_port) || (@base_port + 1 + @id * 2)
     @broadcast_address = opts.delete(:broadcast_address) || @host
 
     @extra_args = opts.map do |key, value|
