@@ -3,17 +3,22 @@ require_relative '../../spec_helper'
 describe Nsqlookupd do
 
   describe '::new' do
+    it 'should use a non-standard base port' do
+      nsqlookupd = Nsqlookupd.new
+      expect(nsqlookupd.base_port).to_not eq(4160)
+    end
+
     it 'should have tcp_port and http_port set by default' do
-      nsqd = Nsqlookupd.new
-      expect(nsqd.tcp_port).to eq(4160)
-      expect(nsqd.http_port).to eq(4161)
+      nsqlookupd = Nsqlookupd.new
+      expect(nsqlookupd.tcp_port).to eq(nsqlookupd.base_port)
+      expect(nsqlookupd.http_port).to eq(nsqlookupd.base_port + 1)
     end
 
     it 'should set tcp_port and http_port based on id if they\'re not specified' do
       id = 5
-      nsqd = Nsqlookupd.new(id: id)
-      expect(nsqd.tcp_port).to eq(4160 + id * 2)
-      expect(nsqd.http_port).to eq(4161 + id * 2)
+      nsqlookupd = Nsqlookupd.new(id: id)
+      expect(nsqlookupd.tcp_port).to eq(nsqlookupd.base_port + id * 2)
+      expect(nsqlookupd.http_port).to eq(nsqlookupd.base_port + 1 + id * 2)
     end
   end
 
