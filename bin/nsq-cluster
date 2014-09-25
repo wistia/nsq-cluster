@@ -17,12 +17,12 @@ options = {
 OptionParser.new do |opts|
   opts.banner = "Usage: nsq-cluster [options]"
 
-  opts.on("-q", "--nsqd", "Number of nsqd instances to run") do |c|
-    options[:nsqd_count] = c
+  opts.on("-q", "--nsqd=NUM", "Number of nsqd instances to run") do |c|
+    options[:nsqd_count] = c.to_i
   end
 
-  opts.on("-l", "--nsqlookupd", "Number of nsqd instances to run") do |l|
-    options[:nsqlookupd_count] = l
+  opts.on("-l", "--nsqlookupd=NUM", "Number of nsqd instances to run") do |l|
+    options[:nsqlookupd_count] = l.to_i
   end
 end.parse!
 
