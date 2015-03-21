@@ -16,6 +16,8 @@ RSpec.configure do |config|
   config.color = true
   config.order = :random
   config.tty = true
+
+  config.filter_run_excluding :nsqadmin_stop => 'required' unless NSQADMIN_STOP_AVAILABLE
 end
 
 RSpec.configuration.before :each do

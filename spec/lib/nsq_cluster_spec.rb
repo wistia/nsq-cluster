@@ -1,5 +1,4 @@
 require_relative '../spec_helper'
-require 'sys/proctable'
 require 'socket'
 
 describe NsqCluster do
@@ -70,7 +69,7 @@ describe NsqCluster do
       }.to raise_error(Errno::ENOENT)
     end
 
-    it 'should accept extra flags for nsqd via nsqd_options' do
+    it 'should accept extra flags for nsqd via nsqd_options', :nsqadmin_stop => 'required' do
       begin
         cluster = NsqCluster.new(nsqd_count: 1, nsqd_options: { verbose: true })
         nsqd = cluster.nsqd.first
@@ -84,7 +83,7 @@ describe NsqCluster do
   end
 
 
-  describe '#block_until_running' do
+  describe '#block_until_running', :nsqadmin_stop => 'required' do
     it 'ensures nsq cluster is running after execution' do
       cluster = NsqCluster.new(
         nsqd_count: 1, nsqlookupd_count: 1, nsqadmin: true, async: true
@@ -98,7 +97,7 @@ describe NsqCluster do
   end
 
 
-  describe '#block_until_stopped' do
+  describe '#block_until_stopped', :nsqadmin_stop => 'required' do
     it 'ensures nsql cluster is stopped after execution' do
       cluster = NsqCluster.new(
         nsqd_count: 3, nsqlookupd_count: 3, nsqadmin: true
@@ -116,7 +115,7 @@ describe NsqCluster do
   end
 
 
-  describe '#all_services' do
+  describe '#all_services', :nsqadmin_stop => 'required' do
     it 'contains array with every instance of every service' do
       cluster = NsqCluster.new(
         nsqd_count: 3,

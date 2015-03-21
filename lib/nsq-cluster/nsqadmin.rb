@@ -1,4 +1,10 @@
-require 'sys/proctable'
+begin
+  require 'sys/proctable'
+  NSQADMIN_STOP_AVAILABLE = true
+rescue LoadError
+  warn 'sys/proctable is not available to stop Nsqadmin ...'
+  NSQADMIN_STOP_AVAILABLE = false
+end
 
 require_relative 'process_wrapper'
 
@@ -9,9 +15,9 @@ class Nsqadmin < ProcessWrapper
   def initialize(opts = {}, verbose = false)
     super
 
-    @host = '127.0.0.1'
+    @host      = '127.0.0.1'
     @http_port = opts.delete(:http_port) || 4171
-    @lookupd = opts.delete(:nsqlookupd) || []
+    @lookupd   = opts.delete(:nsqlookupd) || []
 
     @extra_args = opts.map do |key, value|
       "--#{key.to_s.gsub('_', '-')}=#{value}"
@@ -20,7 +26,9 @@ class Nsqadmin < ProcessWrapper
 
 
   def stop(opts = {})
-    Sys::ProcTable.ps.select{|pe| pe.ppid == @pid}.each do |child_pid|
+    raise 'sys/proctable is not available to stop Nsqadmin ...' unless NSQADMIN_STOP_AVAILABLE
+
+    Sys::ProcTable.ps.select { |pe| pe.ppid == @pid }.each do |child_pid|
       Process.kill('TERM', child_pid)
     end
     super
@@ -34,7 +42,7 @@ class Nsqadmin < ProcessWrapper
 
   def args
     base_args = [
-      %Q(--http-address=#{@host}:#{@http_port})
+        %Q(--http-address=#{@host}:#{@http_port})
     ]
 
     lookupd_args = @lookupd.map do |ld|

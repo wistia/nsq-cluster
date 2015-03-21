@@ -94,3 +94,6 @@ nsqlookupd.ping
 # Get general info
 nsqlookupd.info
 ```
+
+# NSQAdmin
+
