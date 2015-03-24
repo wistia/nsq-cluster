@@ -1,3 +1,7 @@
+# rbenv
+.ruby-version
+.ruby-gemset
+
 # rcov generated
 coverage
 coverage.data
@@ -11,6 +15,7 @@ doc
 
 # bundler
 .bundle
+Gemfile.lock
 
 # jeweler generated
 pkg
