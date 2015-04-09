@@ -20,13 +20,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = '2.0.3'
   s.summary = 'Easily setup and manage a local NSQ cluster'
 
-  if ENV['PLATFORM'] == 'java' || ::RUBY_PLATFORM == 'java'
-    s.platform = 'java'
-  else
-    s.add_dependency(%q<sys-proctable>, ['>= 0'])
-  end
-
   s.add_development_dependency(%q<fakeweb>, ['~> 1.3'])
   s.add_development_dependency(%q<rspec>, ['~> 3.0'])
+  s.add_development_dependency(%q<childprocess>, ['~> 0.5.6'])
 end
 

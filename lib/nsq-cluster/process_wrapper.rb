@@ -1,4 +1,7 @@
+require 'childprocess'
+
 class ProcessWrapper
+
   HTTPCHECK_INTERVAL = 0.01
 
   attr_reader :pid
@@ -7,32 +10,30 @@ class ProcessWrapper
     @verbose = verbose
   end
 
-
   def start(opts = {})
     raise "#{command} is already running" if running? || another_instance_is_running?
-    @pid = spawn(command, *args, [:out, :err] => output)
+    setup_process
+    start_process
     block_until_running unless opts[:async]
   end
 
-
   def stop(opts = {})
     raise "#{command} is not running" unless running?
-    Process.kill('TERM', @pid)
-    Process.waitpid(@pid)
-    @pid = nil
+    begin
+      @process.poll_for_exit(3)
+    rescue ChildProcess::TimeoutError
+      @process.stop
+    end
     block_until_stopped unless opts[:async]
   end
-
 
   def destroy
     stop(async: true) if running?
   end
 
-
   def running?
-    !!@pid
+    @process && @process.alive?
   end
-
 
   def another_instance_is_running?
     if respond_to?(:http_port)
@@ -42,16 +43,13 @@ class ProcessWrapper
     end
   end
 
-
   def command
     raise 'you have to override this in a subclass, hotshot'
   end
 
-
   def args
     raise 'you have to override this in a subclass as well, buddy'
   end
-
 
   def output
     if @verbose
@@ -61,7 +59,6 @@ class ProcessWrapper
     end
   end
 
-
   def block_until_running
     if respond_to?(:http_port) && respond_to?(:host)
       wait_for_http_port
@@ -69,7 +66,6 @@ class ProcessWrapper
       raise "Can't block without http port and host"
     end
   end
-
 
   def block_until_stopped
     if respond_to?(:http_port) && respond_to?(:host)
@@ -79,8 +75,24 @@ class ProcessWrapper
     end
   end
 
+  def pid
+    @process && @process.pid
+  end
 
   private
+
+  def setup_process
+    @process = ::ChildProcess.build command, *args.map { |x| x.to_s }
+    if @verbose
+      @process.io.stdout = STDOUT
+      @process.io.stderr = STDERR
+    end
+  end
+
+  def start_process
+    @process.start
+  end
+
   def wait_for_http_port
     until http_port_open? do
       sleep HTTPCHECK_INTERVAL
@@ -88,14 +100,12 @@ class ProcessWrapper
     puts "HTTP port #{http_port} responded to /ping." if @verbose
   end
 
-
   def wait_for_no_http_port
     until !http_port_open? do
       sleep HTTPCHECK_INTERVAL
     end
     puts "HTTP port #{http_port} stopped responding to /ping." if @verbose
   end
-
 
   def http_port_open?
     begin

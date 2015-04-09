@@ -15,7 +15,7 @@ describe Nsqlookupd do
     end
 
     it 'should set tcp_port and http_port based on id if they\'re not specified' do
-      id = 5
+      id         = 5
       nsqlookupd = Nsqlookupd.new(id: id)
       expect(nsqlookupd.tcp_port).to eq(nsqlookupd.base_port + id * 2)
       expect(nsqlookupd.http_port).to eq(nsqlookupd.base_port + 1 + id * 2)
@@ -25,15 +25,15 @@ describe Nsqlookupd do
   describe '#args' do
     it 'includes arbitrary options passed in to the constructor' do
       nsqd = Nsqlookupd.new(some_random_flag: '60s')
-      arg = '--some-random-flag=60s'
+      arg  = '--some-random-flag=60s'
       expect(nsqd.args.include?(arg)).to eq(true)
     end
   end
 
   describe 'while running' do
     before do
-      @cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
-      @nsqd = @cluster.nsqd.first
+      @cluster    = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
+      @nsqd       = @cluster.nsqd.first
       @nsqlookupd = @cluster.nsqlookupd.first
       @nsqlookupd.block_until_running
     end
