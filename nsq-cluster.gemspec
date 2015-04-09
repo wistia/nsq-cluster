@@ -20,8 +20,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = '2.0.3'
   s.summary = 'Easily setup and manage a local NSQ cluster'
 
+  s.add_runtime_dependency(%q<childprocess>, ['~> 0.5.6'])
   s.add_development_dependency(%q<fakeweb>, ['~> 1.3'])
   s.add_development_dependency(%q<rspec>, ['~> 3.0'])
-  s.add_development_dependency(%q<childprocess>, ['~> 0.5.6'])
 end
 
