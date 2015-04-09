@@ -7,8 +7,8 @@ class Nsqadmin < ProcessWrapper
   def initialize(opts = {}, verbose = false)
     super
 
-    @host      = '127.0.0.1'
-    @http_port = opts.delete(:http_port) || 4171
+    @host      = self.class.host || '127.0.0.1'
+    @http_port = opts.delete(:http_port) || self.class.base_port || 4171
     @lookupd   = opts.delete(:nsqlookupd) || []
 
     @extra_args = opts.map do |key, value|

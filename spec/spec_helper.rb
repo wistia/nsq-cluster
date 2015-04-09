@@ -11,6 +11,11 @@ end
 
 require 'nsq-cluster'
 
+# Set uncommon port numbers to avoid clashing with local instances
+Nsqd.base_port       = 14150
+Nsqlookupd.base_port = 14160
+Nsqadmin.base_port   = 14171
+
 require 'fakeweb'
 require 'childprocess'
 

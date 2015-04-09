@@ -79,6 +79,12 @@ class ProcessWrapper
     @process && @process.pid
   end
 
+  class << self
+
+    attr_accessor :host, :base_port
+
+  end
+
   private
 
   def setup_process

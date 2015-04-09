@@ -10,11 +10,10 @@ class Nsqlookupd < ProcessWrapper
     super
 
     @id        = opts.delete(:id) || 0
-    @host      = opts.delete(:host) || '127.0.0.1'
+    @host      = opts.delete(:host) || self.class.host || '127.0.0.1'
 
-    # Use a non-standard nsqlookupd port by default so as to not conflict with
-    # any local instances. This is helpful when running tests!
-    @base_port = opts.delete(:base_port) || 4360
+    # You can configure the port at the class or instance level to avoid clashing with any local instance
+    @base_port = opts.delete(:base_port) || self.class.base_port || 4160
 
     @tcp_port          = opts.delete(:tcp_port) || (@base_port + @id * 2)
     @http_port         = opts.delete(:http_port) || (@base_port + 1 + @id * 2)
@@ -30,11 +29,11 @@ class Nsqlookupd < ProcessWrapper
   end
 
   def args
-    [
-      %Q(--tcp-address=#{@host}:#{@tcp_port}),
-      %Q(--http-address=#{@host}:#{@http_port}),
-      %Q(--broadcast-address=#{@broadcast_address})
-    ] + @extra_args
+    %W{
+      --tcp-address=#{@host}:#{@tcp_port}
+      --http-address=#{@host}:#{@http_port}
+      --broadcast-address=#{@broadcast_address}
+    } + @extra_args
   end
 
   # return a list of producers for a topic

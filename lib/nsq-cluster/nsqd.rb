@@ -1,6 +1,7 @@
 require_relative 'process_wrapper'
 require_relative 'http_wrapper'
 require 'fileutils'
+require 'securerandom'
 
 class Nsqd < ProcessWrapper
   include HTTPWrapper
@@ -12,11 +13,10 @@ class Nsqd < ProcessWrapper
     super
 
     @id        = opts.delete(:id) || 0
-    @host      = opts.delete(:host) || '127.0.0.1'
+    @host      = opts.delete(:host) || self.class.host || '127.0.0.1'
 
-    # Use a non-standard nsqd port by default so as to not conflict with any
-    # local instances. This is helpful when running tests!
-    @base_port = opts.delete(:base_port) || 4250
+    # You can configure the port at the class or instance level to avoid clashing with any local instance
+    @base_port = opts.delete(:base_port) || self.class.base_port || 4150
 
     @tcp_port          = opts.delete(:tcp_port) || (@base_port + @id * 2)
     @http_port         = opts.delete(:http_port) || (@base_port + 1 + @id * 2)
@@ -41,24 +41,20 @@ class Nsqd < ProcessWrapper
   end
 
   def args
-    base_args = [
-      %Q(--tcp-address=#{@host}:#{@tcp_port}),
-      %Q(--http-address=#{@host}:#{@http_port}),
-      %Q(--data-path=#{data_path}),
-      %Q(--worker-id=#{id}),
-      %Q(--broadcast-address=#{@broadcast_address})
-    ]
-
-    lookupd_args = @lookupd.map do |ld|
-      %Q(--lookupd-tcp-address=#{ld.host}:#{ld.tcp_port})
-    end
-
+    base_args = %W{
+      --tcp-address=#{@host}:#{@tcp_port}
+      --http-address=#{@host}:#{@http_port}
+      --data-path=#{data_path}
+      --worker-id=#{id}
+      --broadcast-address=#{@broadcast_address}
+    }
+    lookupd_args = @lookupd.map { |ld| %Q(--lookupd-tcp-address=#{ld.host}:#{ld.tcp_port}) }
     base_args + @extra_args + lookupd_args
   end
 
   # find or create a temporary data directory for this instance
   def data_path
-    "/tmp/nsqd-#{id}"
+    "/tmp/nsqd-#{id}-#{SecureRandom.hex[0,10]}"
   end
 
   # publish a single message to a topic
