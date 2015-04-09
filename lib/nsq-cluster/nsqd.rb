@@ -54,7 +54,7 @@ class Nsqd < ProcessWrapper
 
   # find or create a temporary data directory for this instance
   def data_path
-    "/tmp/nsqd-#{id}-#{SecureRandom.hex[0,10]}"
+    @data_path ||= "/tmp/nsqd-#{id}-#{SecureRandom.hex[0,10]}"
   end
 
   # publish a single message to a topic
