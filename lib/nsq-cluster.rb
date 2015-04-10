@@ -66,7 +66,7 @@ class NsqCluster
     @nsqlookupd.map { |lookupd| "http://#{lookupd.host}:#{lookupd.http_port}" }
   end
 
-  def block_until_running(timeout = 3)
+  def block_until_running(timeout = 5)
     puts 'Waiting for cluster to launch...' if @verbose
     begin
       Timeout::timeout(timeout) do
@@ -133,7 +133,7 @@ class NsqCluster
   end
 
   # Run command in a thread per service and block until all have finished processing
-  def run_cmd_in_all_services(meth, timeout = 3)
+  def run_cmd_in_all_services(meth, timeout = 10)
     puts "run_cmd_in_all_services : #{meth} : #{@pool.busy_size} : starting ..." if @verbose
 
     begin
