@@ -134,7 +134,7 @@ class NsqCluster
 
   # Run command in a thread per service and block until all have finished processing
   def run_cmd_in_all_services(meth, timeout = 10)
-    puts "run_cmd_in_all_services : #{meth} : #{@pool.busy_size} : starting ..." if @verbose
+    puts "run_cmd_in_all_services : #{meth} : starting ..." if @verbose
 
     begin
       Timeout::timeout(timeout) do
