@@ -13,8 +13,6 @@
 
 require 'net/http'
 require 'timeout'
-require 'lifeguard'
-require 'thread_safe'
 
 require_relative 'nsq-cluster/nsqlookupd'
 require_relative 'nsq-cluster/nsqd'
@@ -35,9 +33,6 @@ class NsqCluster
     }.merge(opts)
 
     @verbose = opts[:verbose]
-
-    pool_size = opts[:nsqlookupd_count] + opts[:nsqd_count] + (opts[:nsqadmin] ? 1 : 0)
-    @pool     = ::Lifeguard::InfiniteThreadpool.new pool_size: pool_size
 
     @nsqlookupd = create_nsqlookupds(opts[:nsqlookupd_count], opts[:nsqdlookupd_options])
     @nsqd       = create_nsqds(opts[:nsqd_count], opts[:nsqd_options])
