@@ -15,7 +15,7 @@ module HTTPWrapper
   end
 
   def get(path, params = {})
-    uri       = uri(path)
+    uri       = build_uri(path)
     uri.query = URI.encode_www_form(params)
     Net::HTTP.get_response(uri)
   end
