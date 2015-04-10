@@ -5,7 +5,7 @@ module HTTPWrapper
 
 
   def post(path, params = {}, body = nil)
-    uri          = uri("#{path}?#{URI.encode_www_form(params)}")
+    uri          = build_uri("#{path}?#{URI.encode_www_form(params)}")
     request      = Net::HTTP::Post.new(uri)
     request.body = body
 
@@ -23,7 +23,7 @@ module HTTPWrapper
   private
 
 
-  def uri(path)
+  def build_uri(path)
     URI("http://#{@host}:#{@http_port}/#{path}")
   end
 
