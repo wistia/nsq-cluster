@@ -62,7 +62,7 @@ describe NsqCluster do
       allow_any_instance_of(Nsqd).to receive(:command).and_return('executable-that-does-not-exist')
       expect {
         NsqCluster.new(nsqd_count: 1).destroy
-      }.to raise_error(ChildProcess::LaunchError)
+      }.to raise_error
     end
 
     it 'should accept extra flags for nsqd via nsqd_options' do
