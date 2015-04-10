@@ -8,8 +8,7 @@ rvm:
   - jruby-19mode
 
 env:
-  - NSQ_DOWNLOAD=nsq-0.3.2.linux-amd64.go1.4.1
-  - JRUBY_OPTS="--server -Dcext.enabled=false -Xcompile.invokedynamic=false -J-Dfile.encoding=utf8 --2.0"
+  - NSQ_DOWNLOAD=nsq-0.3.2.linux-amd64.go1.4.1 JRUBY_OPTS="--server -Dcext.enabled=false -Xcompile.invokedynamic=false -J-Dfile.encoding=utf8 --2.0"
 
 install:
   - wget http://bitly-downloads.s3.amazonaws.com/nsq/$NSQ_DOWNLOAD.tar.gz
