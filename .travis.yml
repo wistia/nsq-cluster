@@ -10,15 +10,20 @@ rvm:
 env:
   - NSQ_DOWNLOAD=nsq-0.3.2.linux-amd64.go1.4.1
 
-script:
+install:
   - wget http://bitly-downloads.s3.amazonaws.com/nsq/$NSQ_DOWNLOAD.tar.gz
   - tar zxvf $NSQ_DOWNLOAD.tar.gz
   - export PATH=$NSQ_DOWNLOAD/bin:$PATH
-  - pushd $TRAVIS_BUILD_DIR
+  - bundle install --jobs=3 --retry=3
+
+script:
   - bundle exec rake spec
-  - popd
 
 notifications:
-  email: true
+  email:
+    recipients:
+      - aemadrid@gmail.com
+    on_success: change
+    on_failure: change
 
 sudo: false
