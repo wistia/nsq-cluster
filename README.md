@@ -1,5 +1,7 @@
 # nsq-cluster
 
+[![Build Status](https://travis-ci.org/aemadrid/nsq-cluster.svg?branch=master)](https://travis-ci.org/aemadrid/nsq-cluster)
+
 Easily start up a local NSQ cluster. This is great for testing.
 
 ```ruby
