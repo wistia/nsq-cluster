@@ -13,12 +13,15 @@
 
 require 'net/http'
 require 'timeout'
+require 'lifeguard'
+require 'thread_safe'
 
 require_relative 'nsq-cluster/nsqlookupd'
 require_relative 'nsq-cluster/nsqd'
 require_relative 'nsq-cluster/nsqadmin'
 
 class NsqCluster
+
   attr_reader :nsqd, :nsqlookupd, :nsqadmin
 
   def initialize(opts = {})
@@ -28,25 +31,19 @@ class NsqCluster
       nsqd_count:          0,
       nsqadmin:            false,
       nsqd_options:        {},
-      verbose:             false
+      verbose:             ENV.fetch('VERBOSE', 'false') == 'true'
     }.merge(opts)
 
-    @verbose    = opts[:verbose]
+    @verbose = opts[:verbose]
+
+    pool_size = opts[:nsqlookupd_count] + opts[:nsqd_count] + (opts[:nsqadmin] ? 1 : 0)
+    @pool     = ::Lifeguard::InfiniteThreadpool.new pool_size: pool_size
+
     @nsqlookupd = create_nsqlookupds(opts[:nsqlookupd_count], opts[:nsqdlookupd_options])
     @nsqd       = create_nsqds(opts[:nsqd_count], opts[:nsqd_options])
     @nsqadmin   = create_nsqadmin if opts[:nsqadmin]
 
-    begin
-      # start everything!
-      all_services.each { |d| d.start(async: true) }
-
-      # by default, block execution until everything is started
-      block_until_running unless opts[:async]
-    rescue Exception => ex
-      # if we hit an error, stop everything that we started
-      destroy
-      raise ex
-    end
+    start_services(opts)
   end
 
   def create_nsqlookupds(count, options)
@@ -66,7 +63,7 @@ class NsqCluster
   end
 
   def destroy
-    all_services.each { |s| s.destroy }
+    run_cmd_in_all_services :destroy, 5
   end
 
   # return an array of http endpoints
@@ -78,7 +75,7 @@ class NsqCluster
     puts 'Waiting for cluster to launch...' if @verbose
     begin
       Timeout::timeout(timeout) do
-        all_services.each { |service| service.block_until_running }
+        run_cmd_in_all_services :block_until_running
         puts 'Cluster launched.' if @verbose
       end
     rescue Timeout::Error
@@ -86,11 +83,21 @@ class NsqCluster
     end
   end
 
+  def services_statuses
+    all_services.each_with_object({}) { |svc, hsh| hsh[svc.uid] = svc.running? }
+  end
+
+  def running?
+    sts = services_statuses
+    puts "statuses : #{sts.inspect}" if @verbose
+    sts.values.all?
+  end
+
   def block_until_stopped(timeout = 10)
     puts 'Waiting for cluster to stop...' if @verbose
     begin
       Timeout::timeout(timeout) do
-        all_services.each { |service| service.block_until_stopped }
+        run_cmd_in_all_services :block_until_stopped
         puts 'Cluster stopped.' if @verbose
       end
     rescue Timeout::Error
@@ -98,10 +105,48 @@ class NsqCluster
     end
   end
 
+  def to_s
+    "#<#{self.class.name} nsqd=#{@nsqd.size} nsqlookupd=#{@nsqlookupd.size} nsqadmin=#{!!@nsqadmin} verbose=#{@verbose}>"
+  end
+
+  alias :inspect :to_s
+
   private
+
+  def start_services(opts)
+    begin
+      puts 'starting everything' if @verbose
+      run_cmd_in_all_services :start
+      puts 'running everything?' if @verbose
+      # raise 'Some services failed to stay running' unless running?
+      running?
+
+      puts 'block until running everything?' if @verbose
+      # by default, block execution until everything is started
+      block_until_running unless opts[:async]
+    rescue Exception => ex
+      # if we hit an error, stop everything that we started
+      puts "start_services : #{ex.class.name} : #{ex.message}\n  #{ex.backtrace[0,5].join("\n  ")}" if @verbose
+      destroy
+      raise ex
+    end
+  end
 
   def all_services
     # nsqadmin responds to /ping as well, even though it is not documented.
     (@nsqlookupd + @nsqd + [@nsqadmin]).compact
+  end
+
+  # Run command in a thread per service and block until all have finished processing
+  def run_cmd_in_all_services(meth, timeout = 3)
+    puts "run_cmd_in_all_services : #{meth} : #{@pool.busy_size} : starting ..." if @verbose
+
+    begin
+      Timeout::timeout(timeout) do
+        all_services.map { |service| service.send(meth) }
+      end
+    rescue Timeout::Error
+      raise "Cluster did not #{meth} within #{timeout} seconds."
+    end
   end
 end

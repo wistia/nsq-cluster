@@ -38,7 +38,9 @@ describe NsqCluster do
     end
 
     it 'should raise an exception if a component of the cluster is already started' do
+      puts ' starting old cluster '.center(90, '=')
       old_cluster = NsqCluster.new(nsqd_count: 1)
+      puts ' starting new cluster '.center(90, '=')
       expect { NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1) }.to raise_error
       old_cluster.destroy
     end

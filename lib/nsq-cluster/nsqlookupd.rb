@@ -24,6 +24,10 @@ class Nsqlookupd < ProcessWrapper
     end
   end
 
+  def ports_info_str
+    " tcp_port=#{@tcp_port} http_port=#{@http_port}"
+  end
+
   def command
     'nsqlookupd'
   end
@@ -72,7 +76,6 @@ class Nsqlookupd < ProcessWrapper
   end
 
   private
-
 
   def nsqlookupd_post(action, params)
     if params[:topic] && params[:channel]

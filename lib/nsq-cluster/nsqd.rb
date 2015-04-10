@@ -31,6 +31,10 @@ class Nsqd < ProcessWrapper
     create_data_directory
   end
 
+  def ports_info_str
+    " tcp_port=#{@tcp_port} http_port=#{@http_port} lookupd=#{@lookupd}"
+  end
+
   def destroy
     super
     clear_data_directory

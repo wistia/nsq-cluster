@@ -16,6 +16,9 @@ class Nsqadmin < ProcessWrapper
     end
   end
 
+  def ports_info_str
+    " http_port=#{@http_port} lookupd=#{@lookupd}"
+  end
   def command
     'nsqadmin'
   end
@@ -25,13 +28,6 @@ class Nsqadmin < ProcessWrapper
     lookupd_args = @lookupd.map { |ld| %Q(--lookupd-http-address=#{ld.host}:#{ld.http_port}) }
 
     base_args + @extra_args + lookupd_args
-  end
-
-  private
-
-  def setup_process
-    super
-    @process.leader = true
   end
 
 end

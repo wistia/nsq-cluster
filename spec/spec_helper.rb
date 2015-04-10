@@ -10,6 +10,7 @@ rescue Bundler::BundlerError => e
 end
 
 require 'nsq-cluster'
+ENV['VERBOSE'] = 'true'
 
 # Set uncommon port numbers to avoid clashing with local instances
 Nsqd.base_port       = 14150
