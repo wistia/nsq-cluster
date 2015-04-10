@@ -11,44 +11,26 @@ class ProcessWrapper
   end
 
   def start(opts = {})
-    puts "[#{uid}] start : running : #{running?} : another_instance_is_running? :#{another_instance_is_running?}" if @verbose
-    if running?
-      puts "[#{uid}] start : already running, raising exception ..." if @verbose
-      raise "#{uid} is already running"
-    end
-    if another_instance_is_running?
-      puts "[#{uid}] start : already running on another process, raising exception ..." if @verbose
-      raise "#{uid} is already running on another process"
-    end
-    puts "[#{uid}] start : setup_process"
+    raise "#{uid} is already running" if running? || another_instance_is_running?
+
     setup_process
-    puts "[#{uid}] start : start_process"
     start_process
-    puts "[#{uid}] start : block_until_running"
     block_until_running unless opts[:async]
-    puts "[#{uid}] start : at_exit"
     at_exit { stop }
-    puts "[#{uid}] start : done"
     true
   end
 
   def stop(opts = {})
-    puts "[#{uid}] stop : running : #{running?}" if @verbose
     return false unless running?
 
-    puts "[#{uid}] stop : running : #{running?} : full stop ..."
     @process.stop
-    puts "[#{uid}] stop : running : #{running?} : blocking until stopped ..."
-    block_until_stopped unless opts[:async]
   end
 
   def destroy
-    puts "[#{uid}] destroy : running : #{running?}" if @verbose
     stop if running?
   end
 
   def running?
-    puts "[#{uid}] running? : @process : #{@process.class.name} : #{@process ? @process.alive? : 'N/A'} " if @verbose
     @process && @process.alive?
   end
 
@@ -130,12 +112,7 @@ class ProcessWrapper
 
   def start_process
     @process.start
-    if @process.alive?
-      puts "[#{uid}] start_process : is alive" if @verbose
-    else
-      puts "[#{uid}] start_process : is NOT alive" if @verbose
-      raise "could not start #{uid} process"
-    end
+    raise "could not start #{uid} process" unless @process.alive?
   end
 
   def wait_for_http_port
