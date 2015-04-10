@@ -1,4 +1,12 @@
 source 'http://rubygems.org'
 
-# Specify your gem's dependencies in action_subscriber.gemspec
-gemspec
+gem 'childprocess', '~> 0.5.6'
+
+group :development do
+  gem 'fakeweb', '~> 1.3'
+  gem 'rspec', '~> 3.0'
+end
+
+group :development, :test do
+  gem 'rake'
+end
