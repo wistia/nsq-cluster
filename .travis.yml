@@ -13,6 +13,6 @@ script:
   - bundle exec rake spec
   - popd
 notifications:
-  email: false
+  email: true
 
 sudo: false
