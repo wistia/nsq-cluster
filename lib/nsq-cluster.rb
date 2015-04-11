@@ -112,16 +112,11 @@ class NsqCluster
     begin
       puts 'starting everything' if @verbose
       run_cmd_in_all_services :start
-      puts 'running everything?' if @verbose
-      # raise 'Some services failed to stay running' unless running?
-      running?
 
-      puts 'block until running everything?' if @verbose
-      # by default, block execution until everything is started
+      puts 'block until running everything' if @verbose
       block_until_running unless opts[:async]
     rescue Exception => ex
       # if we hit an error, stop everything that we started
-      puts "start_services : #{ex.class.name} : #{ex.message}\n  #{ex.backtrace[0,5].join("\n  ")}" if @verbose
       destroy
       raise ex
     end
