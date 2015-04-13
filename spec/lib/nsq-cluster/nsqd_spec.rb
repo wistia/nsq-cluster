@@ -17,7 +17,7 @@ describe Nsqd do
     end
 
     it 'should set tcp_port and http_port based on id if they\'re not specified' do
-      id = 5
+      id   = 5
       nsqd = Nsqd.new(id: id)
       expect(nsqd.tcp_port).to eq(nsqd.base_port + id * 2)
       expect(nsqd.http_port).to eq(nsqd.base_port + 1 + id * 2)
@@ -27,7 +27,7 @@ describe Nsqd do
   describe '#args' do
     it 'includes arbitrary options passed in to the constructor' do
       nsqd = Nsqd.new(some_random_flag: '60s')
-      arg = '--some-random-flag=60s'
+      arg  = '--some-random-flag=60s'
       expect(nsqd.args.include?(arg)).to eq(true)
     end
   end
@@ -36,7 +36,7 @@ describe Nsqd do
 
     before do
       @cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
-      @nsqd = @cluster.nsqd.first
+      @nsqd    = @cluster.nsqd.first
       @nsqd.block_until_running
     end
 

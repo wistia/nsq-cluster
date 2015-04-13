@@ -1,11 +1,12 @@
-source "http://rubygems.org"
+source 'http://rubygems.org'
 
-gem 'sys-proctable'
+gem 'childprocess', '~> 0.5.6'
 
 group :development do
   gem 'fakeweb', '~> 1.3'
-  gem 'jeweler', '~> 2.0'
   gem 'rspec', '~> 3.0'
-  gem 'rspec-rainbow', '~> 0.1'
-  gem 'rspec-legacy_formatters', '~> 1.0'
+end
+
+group :development, :test do
+  gem 'rake'
 end

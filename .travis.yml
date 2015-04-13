@@ -1,0 +1,31 @@
+language: ruby
+
+cache: bundler
+
+rvm:
+  - 2.0.0-p247
+  - 2.2.0
+  - jruby-19mode
+
+env:
+  global:
+    - NSQ_DOWNLOAD=nsq-0.3.2.linux-amd64.go1.4.1
+    - JRUBY_OPTS="--server -J-Dfile.encoding=utf8 --2.0"
+
+install:
+  - wget http://bitly-downloads.s3.amazonaws.com/nsq/$NSQ_DOWNLOAD.tar.gz
+  - tar zxvf $NSQ_DOWNLOAD.tar.gz
+  - export PATH=$NSQ_DOWNLOAD/bin:$PATH
+  - bundle install --jobs=3 --retry=3
+
+script:
+  - bundle exec rake spec
+
+notifications:
+  email:
+    recipients:
+      - aemadrid@gmail.com
+    on_success: change
+    on_failure: change
+
+sudo: false
