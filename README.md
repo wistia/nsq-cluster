@@ -17,6 +17,11 @@ cluster.nsqd.last.start
 cluster.destroy
 ```
 
+## Compatibility
+
+- Version 2.x of `nsq-cluster` is compatible with NSQ >= 1.0.
+- Version 1.x of `nsq-cluster` is compatible with NSQ < 1.0.
+
 ## Flags for nsqd and nsqlookupd
 
 Optionally, you can pass in flags for nsqd and nsqlookupd like this:
