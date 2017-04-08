@@ -43,7 +43,7 @@ describe NsqCluster do
 
       expect{
         new_cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
-      }.to raise_error
+      }.to raise_error(RuntimeError)
 
       old_cluster.destroy
     end

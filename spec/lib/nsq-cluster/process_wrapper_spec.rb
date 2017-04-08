@@ -31,11 +31,11 @@ describe ProcessWrapper do
     end
     it 'raises error if host is not defined' do
       described_class.send :remove_method, :host
-      expect{described_class.new.block_until_running}.to raise_error
+      expect{described_class.new.block_until_running}.to raise_error(RuntimeError)
     end
     it 'raises error if http_port is not defined' do
       described_class.send :remove_method, :http_port
-      expect{described_class.new.block_until_running}.to raise_error
+      expect{described_class.new.block_until_running}.to raise_error(RuntimeError)
     end
   end
 
@@ -54,11 +54,11 @@ describe ProcessWrapper do
     end
     it 'raises error if host is not defined' do
       described_class.send :remove_method, :host
-      expect {described_class.new.block_until_stopped}.to raise_error
+      expect {described_class.new.block_until_stopped}.to raise_error(RuntimeError)
     end
     it 'raises error if http_port is not defined' do
       described_class.send :remove_method, :http_port
-      expect{described_class.new.block_until_stopped}.to raise_error
+      expect{described_class.new.block_until_stopped}.to raise_error(RuntimeError)
     end
   end
 end
