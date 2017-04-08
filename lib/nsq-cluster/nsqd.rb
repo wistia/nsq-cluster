@@ -49,7 +49,7 @@ class Nsqd < ProcessWrapper
       %Q(--tcp-address=#{@host}:#{@tcp_port}),
       %Q(--http-address=#{@host}:#{@http_port}),
       %Q(--data-path=#{data_path}),
-      %Q(--worker-id=#{id}),
+      %Q(--node-id=#{id}),
       %Q(--broadcast-address=#{@broadcast_address})
     ]
 
@@ -142,9 +142,9 @@ class Nsqd < ProcessWrapper
 
   def nsqd_post(action, params)
     if params[:topic] && params[:channel]
-      post "#{action}_channel", topic: params[:topic], channel: params[:channel]
+      post "channel/#{action}", topic: params[:topic], channel: params[:channel]
     elsif params[:topic]
-      post "#{action}_topic", topic: params[:topic]
+      post "topic/#{action}", topic: params[:topic]
     else
       raise 'you must specify a topic or topic and channel'
     end

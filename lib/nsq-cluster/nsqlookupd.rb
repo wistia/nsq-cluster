@@ -87,9 +87,9 @@ class Nsqlookupd < ProcessWrapper
 
   def nsqlookupd_post(action, params)
     if params[:topic] && params[:channel]
-      post "#{action}_channel", topic: params[:topic], channel: params[:channel]
+      post "channel/#{action}", topic: params[:topic], channel: params[:channel]
     elsif params[:topic]
-      post "#{action}_topic", topic: params[:topic]
+      post "topic/#{action}", topic: params[:topic]
     else
       raise 'you must specify a topic or topic and channel'
     end

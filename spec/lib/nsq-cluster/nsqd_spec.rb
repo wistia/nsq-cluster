@@ -83,7 +83,7 @@ describe Nsqd do
         it 'should create multiple messages' do
           @nsqd.mpub('test', 'a message', 'another message', 'last message')
 
-          topic = JSON.parse(@nsqd.stats.body)['data']['topics'].select do |t|
+          topic = JSON.parse(@nsqd.stats.body)['topics'].select do |t|
             t['topic_name'] == 'test'
           end.first
 
@@ -120,9 +120,9 @@ describe Nsqd do
         end
 
         describe 'a non-existant channel' do
-          it 'should return status 500' do
+          it 'should return status 404' do
             resp = @nsqd.delete(topic: 'test', channel: 'default')
-            expect(resp.code).to eql('500')
+            expect(resp.code).to eql('404')
           end
         end
       end
@@ -141,9 +141,9 @@ describe Nsqd do
         end
 
         describe 'a non-existant channel' do
-          it 'should return status 500' do
+          it 'should return status 404' do
             resp = @nsqd.pause(topic: 'test', channel: 'default')
-            expect(resp.code).to eql('500')
+            expect(resp.code).to eql('404')
           end
         end
       end
@@ -162,9 +162,9 @@ describe Nsqd do
         end
 
         describe 'a non-existant channel' do
-          it 'should return status 500' do
+          it 'should return status 404' do
             resp = @nsqd.unpause(topic: 'test', channel: 'default')
-            expect(resp.code).to eql('500')
+            expect(resp.code).to eql('404')
           end
         end
       end
@@ -183,9 +183,9 @@ describe Nsqd do
         end
 
         describe 'a non-existant channel' do
-          it 'should return status 500' do
+          it 'should return status 404' do
             resp = @nsqd.empty(topic: 'test', channel: 'default')
-            expect(resp.code).to eql('500')
+            expect(resp.code).to eql('404')
           end
         end
       end

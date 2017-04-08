@@ -94,7 +94,7 @@ class NsqCluster
   end
 
 
-  def block_until_running(timeout = 3)
+  def block_until_running(timeout = 10)
     puts "Waiting for cluster to launch..." if @verbose
     begin
       Timeout::timeout(timeout) do

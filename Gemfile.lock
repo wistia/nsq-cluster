@@ -69,12 +69,14 @@ GEM
       rspec (>= 2.14.0, < 3.1.0)
     rspec-support (3.0.2)
     sys-proctable (0.9.4)
+    sys-proctable (0.9.4-universal-darwin)
     thread_safe (0.3.3)
     thread_safe (0.3.3-java)
 
 PLATFORMS
   java
   ruby
+  x86_64-darwin-16
 
 DEPENDENCIES
   fakeweb (~> 1.3)
@@ -83,3 +85,6 @@ DEPENDENCIES
   rspec-legacy_formatters (~> 1.0)
   rspec-rainbow (~> 0.1)
   sys-proctable
+
+BUNDLED WITH
+   1.14.6
