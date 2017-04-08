@@ -8,6 +8,13 @@ class Nsqd < ProcessWrapper
 
   attr_reader :host, :tcp_port, :http_port, :id, :base_port
 
+  # Returns true if nsqd's version is < 1.0
+  def self.version_is_pre_1?
+    @version_is_pre_1 ||= (
+      `nsqd -version`.index('nsqd v0') == 0
+    )
+  end
+
 
   def initialize(opts = {}, verbose = false)
     super
@@ -49,15 +56,20 @@ class Nsqd < ProcessWrapper
       %Q(--tcp-address=#{@host}:#{@tcp_port}),
       %Q(--http-address=#{@host}:#{@http_port}),
       %Q(--data-path=#{data_path}),
-      %Q(--node-id=#{id}),
       %Q(--broadcast-address=#{@broadcast_address})
     ]
+
+    if Nsqd.version_is_pre_1?
+      node_args = [%Q(--worker-id=#{id})]
+    else
+      node_args = [%Q(--node-id=#{id})]
+    end
 
     lookupd_args = @lookupd.map do |ld|
       %Q(--lookupd-tcp-address=#{ld.host}:#{ld.tcp_port})
     end
 
-    base_args + @extra_args + lookupd_args
+    base_args + node_args + @extra_args + lookupd_args
   end
 
 

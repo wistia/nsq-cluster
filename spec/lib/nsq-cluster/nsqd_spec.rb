@@ -83,7 +83,11 @@ describe Nsqd do
         it 'should create multiple messages' do
           @nsqd.mpub('test', 'a message', 'another message', 'last message')
 
-          topic = JSON.parse(@nsqd.stats.body)['topics'].select do |t|
+          body = JSON.parse(@nsqd.stats.body)
+          # NSQ pre 1.0 has topics nested under a data object
+          topics = body['topics'] || body['data']['topics']
+
+          topic = topics.select do |t|
             t['topic_name'] == 'test'
           end.first
 

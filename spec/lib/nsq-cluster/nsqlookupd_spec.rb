@@ -85,8 +85,12 @@ describe Nsqlookupd do
         end
 
         describe 'a non-existant topic' do
-          it 'should return status 404' do
-            expect(@nsqlookupd.lookup('wtf').code).to eql('404')
+          it 'should return status 500 or 404' do
+            if Nsqd.version_is_pre_1?
+              expect(@nsqlookupd.lookup('wtf').code).to eql('500')
+            else
+              expect(@nsqlookupd.lookup('wtf').code).to eql('404')
+            end
           end
         end
       end
