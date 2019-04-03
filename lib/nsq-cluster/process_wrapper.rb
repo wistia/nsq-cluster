@@ -5,6 +5,7 @@ class ProcessWrapper
 
   def initialize(opts = {}, verbose = false)
     @verbose = verbose
+    @process_paused = false
   end
 
 
@@ -17,10 +18,23 @@ class ProcessWrapper
 
   def stop(opts = {})
     raise "#{command} is not running" unless running?
+    Process.kill('CONT', @pid) if @process_paused
     Process.kill('TERM', @pid)
     Process.waitpid(@pid)
     @pid = nil
     block_until_stopped unless opts[:async]
+  end
+
+  def pause_process(opts = {})
+    raise "#{command} is not running" unless running?
+    @process_paused = true
+    Process.kill('TSTP', @pid)
+  end
+
+  def resume_process(opts = {})
+    raise "#{command} is not running" unless running?
+    @process_paused = false
+    Process.kill('CONT', @pid)
   end
 
 
