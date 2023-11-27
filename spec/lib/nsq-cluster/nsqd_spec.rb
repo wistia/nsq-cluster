@@ -104,9 +104,9 @@ describe Nsqd do
         end
 
         it 'should raise error if topic is not specified' do
-          expect(
-            proc { @nsqd.create(channel: 'default') }
-          ).to raise_error(RuntimeError)
+          expect{
+            @nsqd.create(channel: 'default')
+          }.to raise_error(RuntimeError)
         end
       end
 
