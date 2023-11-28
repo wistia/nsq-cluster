@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'bundler'
+
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -10,14 +11,8 @@ end
 
 require 'nsq-cluster'
 
-require 'fakeweb'
-
 RSpec.configure do |config|
   config.color = true
   config.order = :random
   config.tty = true
-end
-
-RSpec.configuration.before :each do
-  FakeWeb.allow_net_connect = %r[^https?://#{Regexp.escape('127.0.0.1')}.*]
 end

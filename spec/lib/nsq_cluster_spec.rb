@@ -42,7 +42,7 @@ describe NsqCluster do
       old_cluster = NsqCluster.new(nsqd_count: 1)
 
       expect{
-        new_cluster = NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
+        NsqCluster.new(nsqd_count: 1, nsqlookupd_count: 1)
       }.to raise_error(RuntimeError)
 
       old_cluster.destroy
@@ -75,7 +75,7 @@ describe NsqCluster do
         cluster = NsqCluster.new(nsqd_count: 1, nsqd_options: { verbose: true })
         nsqd = cluster.nsqd.first
 
-        cmd = Sys::ProcTable.ps(nsqd.pid).cmdline
+        cmd = Sys::ProcTable.ps(pid: nsqd.pid).cmdline
         expect(cmd).to match(/--verbose=true/)
       ensure
         cluster.destroy
