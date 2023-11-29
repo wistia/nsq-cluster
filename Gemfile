@@ -1,8 +1,7 @@
 source "http://rubygems.org"
 
-gem 'sys-proctable'
+gem 'sys-proctable', '~> 1.3'
 
 group :development do
-  gem 'jeweler', '~> 2.2'
   gem 'rspec', '~> 3.5'
 end
