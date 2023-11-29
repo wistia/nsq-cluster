@@ -11,21 +11,6 @@ rescue Bundler::BundlerError => e
 end
 require 'rake'
 
-require 'jeweler'
-Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://guides.rubygems.org/specification-reference/ for more options
-  gem.name = "nsq-cluster"
-  gem.homepage = "http://github.com/wistia/nsq-cluster"
-  gem.license = "MIT"
-  gem.summary = %Q{Easily setup and manage a local NSQ cluster}
-  gem.description = %Q{Setup nsqd, nsqlookupd, and nsqadmin in a jiffy. Great for testing!}
-  gem.email = "dev@wistia.com"
-  gem.authors = ["Wistia"]
-  gem.files = Dir.glob('lib/**/*.rb') + Dir.glob('bin/*') + ['LICENSE', 'README.md']
-  # dependencies defined in Gemfile
-end
-Jeweler::RubygemsDotOrgTasks.new
-
 require 'rspec/core/rake_task'
 task :default => :spec
 RSpec::Core::RakeTask.new
