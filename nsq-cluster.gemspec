@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files = Dir.glob('lib/**/*.rb') + Dir.glob('bin/*') + ['LICENSE', 'README.md']
   s.homepage = "http://github.com/wistia/nsq-cluster".freeze
   s.licenses = ["MIT".freeze]
-  s.rubygems_version = "2.6.8".freeze
+  s.rubygems_version = "3.4.10".freeze
   s.summary = "Easily setup and manage a local NSQ cluster".freeze
 
   if s.respond_to? :specification_version then
