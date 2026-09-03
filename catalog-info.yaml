@@ -1,0 +1,16 @@
+# this is a catalog entity descriptor file for our Backstage instance (https://backstage.wistia.cloud)
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: nsq-cluster
+  description: Easily set up and manage a local NSQ cluster for testing
+  annotations:
+    github.com/project-slug: wistia/nsq-cluster
+  tags:
+    - lang#ruby
+    - pkg#rubygem
+spec:
+  type: library
+  owner: infrastructure
+  lifecycle: production
